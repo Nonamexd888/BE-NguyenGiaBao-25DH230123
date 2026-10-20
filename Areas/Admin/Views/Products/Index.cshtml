@@ -1,0 +1,62 @@
+﻿@model IEnumerable<BE_NguyenGiaBao_25DH230123.Models.Product>
+
+@{
+    ViewBag.Title = "Product List";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Index</h2>
+
+<h2 class="bg-success">Danh sách game sản phẩm game</h2>
+
+<table class="table bg-info col-lg-12 col-md-6 col-sm-3">
+    <tr>
+        <th class="bg-success">
+            @Html.DisplayNameFor(model => model.ProductName)
+        </th>
+        <th class="bg-success">
+            @Html.DisplayNameFor(model => model.ProductDescription)
+        </th>
+        <th class="bg-success">
+            @Html.DisplayNameFor(model => model.ProductPrice)
+        </th>
+        <th class="bg-success">
+            @Html.DisplayNameFor(model => model.ProductImage)
+        </th>
+        <th class="bg-success">
+            @Html.DisplayNameFor(model => model.Category.CategoryName)
+        </th>
+        <th class="bg-success"></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductDescription)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductPrice)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductImage)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Category.CategoryName)
+            </td>
+            <td>
+                @Html.ActionLink("Cập nhập", "Edit", new { id = item.CategoryID }, new { @class = "btn btn-primary btn-sm" })) |
+                @Html.ActionLink("Chi tiết", "Details", new { id = item.CategoryID }, new { @class = "btn btn-primary btn-sm" })) |
+                @Html.ActionLink("Xóa", "Delete", new { id = item.CategoryID }, new { @class = "btn btn-primary btn-sm" }))
+            </td>
+        </tr>
+    }
+
+</table>
+
+<p>
+    @Html.ActionLink("Thêm mới", "Create", null, new { @class = "btn btn-primary" })
+</p>
