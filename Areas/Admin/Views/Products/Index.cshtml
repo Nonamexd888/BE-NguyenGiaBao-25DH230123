@@ -5,14 +5,12 @@
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h2>Index</h2>
-
 <h2 class="bg-success">Danh sách game sản phẩm game</h2>
 
-<table class="table bg-info">
+<table class="table bg-info container-fluid">
     <tr>
-        <th class="bg-success col-md-3">Tên sản phẩm</th>
-        <th class="bg-success col-md-2">Hình ảnh</th>
+        <th class="bg-success col-md-2">Tên sản phẩm</th>
+        <th class="bg-success col-md-3">Hình ảnh</th>
         <th class="bg-success col-md-1">Đơn giá</th>
         <th class="bg-success col-md-2">Danh mục</th>
         <th class="bg-success col-md-4"></th>
@@ -21,18 +19,11 @@
     @foreach (var item in Model)
     {
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProductName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProductImage)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProductPrice)
-            </td>   
-            <td>
-                @Html.DisplayFor(modelItem => item.Category.CategoryName)
-            </td>
+            <td> <img src="@Html.DisplayFor(modelItem => item.ProductImage)" /> </td>
+            <td>@Html.DisplayFor(modelItem => item.ProductName)</td>
+            <td>@Html.DisplayFor(modelItem => item.ProductPrice)</td>
+            <td>@Html.DisplayFor(modelItem => item.Category.CategoryName)</td>
+
             <td>
                 @Html.ActionLink("Cập nhập", "Edit", new { id = item.CategoryID }, new { @class = "btn btn-primary btn-sm" })) |
                 @Html.ActionLink("Chi tiết", "Details", new { id = item.CategoryID }, new { @class = "btn btn-primary btn-sm" })) |
@@ -40,9 +31,10 @@
             </td>
         </tr>
     }
-
 </table>
 
-<p>
-    @Html.ActionLink("Thêm mới", "Create", null, new { @class = "btn btn-primary" })
-</p>
+<div class="form-group">
+    <div class="col-md-offset-3 col-md-9">
+        @Html.ActionLink("Thêm mới", "Create", null, new { @class = "btn btn-primary" })
+    </div>
+</div>
