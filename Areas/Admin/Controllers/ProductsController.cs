@@ -19,7 +19,6 @@ namespace BE_NguyenGiaBao_25DH230123.Areas.Admin.Controllers
         public ActionResult Index(string SearchTerm)
         {
             var model = new ProductSearchVM();
-
             var products = db.Products.AsQueryable();
 
             if (!string.IsNullOrEmpty(SearchTerm))

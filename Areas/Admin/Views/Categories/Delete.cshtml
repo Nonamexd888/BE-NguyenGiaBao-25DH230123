@@ -5,7 +5,7 @@
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h2 class="bg-success">Xóa danh mục</h2>
+<h2 style="background-color: #22B872;">Xóa danh mục</h2>
 
 <hr />
 @using (Html.BeginForm())
@@ -25,10 +25,10 @@
         </div>
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Xóa" class="btn btn-primary" /> |
+                <input type="submit" value="Xóa" class="btn btn-primary btn-sm" />
                 @Html.ActionLink("Quay lại danh sách", "Index", null, new { @class = "btn btn-primary btn-sm" })
             </div>
         </div>
     </div>
 </div>
-        }
+}
