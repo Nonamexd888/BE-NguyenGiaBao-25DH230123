@@ -16,18 +16,22 @@ namespace BE_NguyenGiaBao_25DH230123.Areas.Admin.Controllers
         private MyStoreEntities db = new MyStoreEntities();
 
         // GET: Admin/Products
-        public ActionResult Index()
+        public ActionResult Index(string SearchTerm)
         {
             var model = new ProductSearchVM();
 
             var products = db.Products.AsQueryable();
 
-            if (!string.IsNul10rEmpty(SearchTerm))
+            if (!string.IsNullOrEmpty(SearchTerm))
             {
                 products = products.Where(p =>
                 p.ProductName.Contains(SearchTerm) ||
-                p.ProductDecription.Contains(SearchTerm) ||
+                p.ProductDescription.Contains(SearchTerm) ||
+                p.Category.CategoryName.Contains(SearchTerm)
+                );
             }
+            model.Products = products.ToList();
+            return View(model);
         }
 
         // GET: Admin/Products/Details/5

@@ -7,5 +7,7 @@ namespace BE_NguyenGiaBao_25DH230123.Models.ViewModel
 {
     public class ProductSearchVM
     {
+        public string SearchTerm { get; set; }
+        public List<Product> Products { get; set; }
     }
 }
