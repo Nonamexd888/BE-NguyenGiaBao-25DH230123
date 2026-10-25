@@ -1,12 +1,16 @@
 ﻿using BE_NguyenGiaBao_25DH230123.Models;
 using BE_NguyenGiaBao_25DH230123.Models.ViewModel;
+using PagedList;
+using PagedList.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Web;
 using System.Web.Mvc;
 
@@ -17,7 +21,7 @@ namespace BE_NguyenGiaBao_25DH230123.Areas.Admin.Controllers
         private MyStoreEntities db = new MyStoreEntities();
 
         // GET: Admin/Products
-        public ActionResult Index(string searchTerm, decimal? minPrice, decimal? maxPrice)
+        public ActionResult Index(string searchTerm, decimal? minPrice, decimal? maxPrice, string sortOrder, int? page)
         {
             var model = new ProductSearchVM();
             var products = db.Products.AsQueryable();
@@ -32,15 +36,41 @@ namespace BE_NguyenGiaBao_25DH230123.Areas.Admin.Controllers
 
             if (minPrice.HasValue)
             {
+                model.MinPrice = minPrice.Value;
                 products = products.Where(p => p.ProductPrice >= minPrice.Value);
             }
 
             if (maxPrice.HasValue)
             {
+                model.MaxPrice = maxPrice.Value;
                 products = products.Where(p => p.ProductPrice <= maxPrice.Value);
             }
 
-            model.Products = products.ToList();
+            switch (sortOrder)
+            {
+                case "name_asc":
+                    products = products.OrderBy(p => p.ProductName);
+                    break;
+                case "name_desc":
+                    products = products.OrderByDescending(p => p.ProductName);
+                    break;
+                case "price_asc":
+                    products = products.OrderBy(p => p.ProductPrice);
+                    break;
+                case "price_desc":
+                    products = products.OrderByDescending(p => p.ProductPrice);
+                    break;
+                default:
+                    products = products.OrderBy(p => p.ProductName);
+                    break;
+            }
+            model.SortOrder = sortOrder;
+
+            int pageNumber = page ?? 1;
+            int pageSize = 2;
+
+            model.Products = products.ToPagedList(pageNumber, pageSize);
+
             return View(model);
         }
 
@@ -75,13 +105,23 @@ namespace BE_NguyenGiaBao_25DH230123.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (product.UploadImg != null)
+                if (product.UploadImg != null && product.UploadImg.ContentLength > 0)
                 {
-                    string filename = Path.GetFileName(product.UploadImg.FileName);​
-                    string savePath = "~/Content/images/";​
-                    product.ProductImage = savePath + filename;                    ​
-                    product.UploadImg.SaveAs(Path.Combine(Server.MapPath(savePath), filename));​
-                }​
+                    string filename = Path.GetFileName(
+                        product.UploadImg.FileName);
+
+                    string folderPath = Server.MapPath("~/Content/images/");
+
+                    if (!Directory.Exists(folderPath))
+                    {
+                        Directory.CreateDirectory(folderPath);
+                    }
+
+                    product.ProductImage = "~/Content/images/" + filename;
+
+                    product.UploadImg.SaveAs(
+                        Path.Combine(folderPath, filename));
+                }
                 db.Products.Add(product);
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -116,13 +156,23 @@ namespace BE_NguyenGiaBao_25DH230123.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (product.UploadImg != null)
+                if (product.UploadImg != null && product.UploadImg.ContentLength > 0)
                 {
-                    string filename = Path.GetFileName(product.UploadImg.FileName);​
-                    string savePath = "~/Content/images/";​
-                    product.ProductImage = savePath + filename;                    ​
-                    product.UploadImg.SaveAs(Path.Combine(Server.MapPath(savePath), filename));​
-                }​
+                    string filename = Path.GetFileName(
+                        product.UploadImg.FileName);
+
+                    string folderPath = Server.MapPath("~/Content/images/");
+
+                    if (!Directory.Exists(folderPath))
+                    {
+                        Directory.CreateDirectory(folderPath);
+                    }
+
+                    product.ProductImage = "~/Content/images/" + filename;
+
+                    product.UploadImg.SaveAs(
+                        Path.Combine(folderPath, filename));
+                }
                 db.Entry(product).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
