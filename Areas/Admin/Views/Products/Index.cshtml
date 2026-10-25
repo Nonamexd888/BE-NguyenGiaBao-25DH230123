@@ -4,39 +4,36 @@
     ViewBag.Title = "Product List";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
-
-<h2 style="background-color: #22B872;">Danh sách game sản phẩm game</h2>
-
-<table class="table bg-info table-responsive">
-    <tr>
-        <th class="col-md-2" style="background-color: #22B872;">Hình ảnh</th>
-        <th class="col-md-3" style="background-color: #22B872;">Tên sản phẩm</th>
-        <th class="col-md-1" style="background-color: #22B872;">Đơn giá</th>
-        <th class="col-md-2" style="background-color: #22B872;">Danh mục</th>
-        <th class="col-md-4" style="background-color: #22B872;"></th>
-    </tr>
-
-    @foreach (var item in Model.Products)
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Search</title>
+    <style>
+        search-container, .order-container {
+            padding-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    @using (Html.BeginForm("Index", "Products", FormMethod.Get))
     {
-        <tr>
-            <td> 
-                <img src="@Html.DisplayFor(modelItem => item.ProductImage)" /> 
-            </td>
-            <td>@Html.DisplayFor(modelItem => item.ProductName)</td>
-            <td>@Html.DisplayFor(modelItem => item.ProductPrice)</td>
-            <td>@Html.DisplayFor(modelItem => item.Category.CategoryName)</td>
+        <div class="form-group search-container">
+            @Html.TextBoxFor(m => m.SearchTerm, new
+            {
+               @class = "form-control",
+               placeholder = "Nhập tên, mô tả hoặc chủng loại sản phẩm"
+            })
 
-            <td>
-                @Html.ActionLink("Cập nhập", "Edit", new { id = item.ProductID }, new { @class = "btn btn-primary btn-sm" }) |
-                @Html.ActionLink("Chi tiết", "Details", new { id = item.ProductID }, new { @class = "btn btn-primary btn-sm" }) |
-                @Html.ActionLink("Xóa", "Delete", new { id = item.ProductID }, new { @class = "btn btn-primary btn-sm" })
-            </td>
-        </tr>
+            @Html.TextBoxFor(m => m.MinPrice, new {
+            @class = "form-control", placeholder = "Nhập giá tối thiểu", type = "number" })
+            @Html.TextBoxFor(m => m.MaxPrice, new {
+            @class = "form-control", placeholder = "Nhập giá tối đa", type = "number" })
+            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+        </div>
     }
-</table>
-
-<div class="form-group">
-    <div class="col-md-offset-3 col-md-9">
-        @Html.ActionLink("Thêm mới", "Create", null, new { @class = "btn btn-primary" })
-    </div>
-</div>
+    @Html.Partial("PVListProduct", Model)
+</body>
+</html>

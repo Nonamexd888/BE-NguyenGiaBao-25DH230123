@@ -1,13 +1,14 @@
-﻿using System;
+﻿using BE_NguyenGiaBao_25DH230123.Models;
+using BE_NguyenGiaBao_25DH230123.Models.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using BE_NguyenGiaBao_25DH230123.Models;
-using BE_NguyenGiaBao_25DH230123.Models.ViewModel;
 
 namespace BE_NguyenGiaBao_25DH230123.Areas.Admin.Controllers
 {
@@ -16,19 +17,29 @@ namespace BE_NguyenGiaBao_25DH230123.Areas.Admin.Controllers
         private MyStoreEntities db = new MyStoreEntities();
 
         // GET: Admin/Products
-        public ActionResult Index(string SearchTerm)
+        public ActionResult Index(string searchTerm, decimal? minPrice, decimal? maxPrice)
         {
             var model = new ProductSearchVM();
             var products = db.Products.AsQueryable();
 
-            if (!string.IsNullOrEmpty(SearchTerm))
+            if (!string.IsNullOrEmpty(searchTerm))
             {
                 products = products.Where(p =>
-                p.ProductName.Contains(SearchTerm) ||
-                p.ProductDescription.Contains(SearchTerm) ||
-                p.Category.CategoryName.Contains(SearchTerm)
-                );
+                p.ProductName.Contains(searchTerm) ||
+                p.ProductDescription.Contains(searchTerm) ||
+                p.Category.CategoryName.Contains(searchTerm));
             }
+
+            if (minPrice.HasValue)
+            {
+                products = products.Where(p => p.ProductPrice >= minPrice.Value);
+            }
+
+            if (maxPrice.HasValue)
+            {
+                products = products.Where(p => p.ProductPrice <= maxPrice.Value);
+            }
+
             model.Products = products.ToList();
             return View(model);
         }
@@ -60,10 +71,17 @@ namespace BE_NguyenGiaBao_25DH230123.Areas.Admin.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ProductID,CategoryID,ProductName,ProductDescription,ProductPrice,ProductImage")] Product product)
+        public ActionResult Create([Bind(Include = "ProductID,CategoryID,ProductName,ProductDescription,ProductPrice,ProductImage,UploadImg")] Product product)
         {
             if (ModelState.IsValid)
             {
+                if (product.UploadImg != null)
+                {
+                    string filename = Path.GetFileName(product.UploadImg.FileName);​
+                    string savePath = "~/Content/images/";​
+                    product.ProductImage = savePath + filename;                    ​
+                    product.UploadImg.SaveAs(Path.Combine(Server.MapPath(savePath), filename));​
+                }​
                 db.Products.Add(product);
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -94,10 +112,17 @@ namespace BE_NguyenGiaBao_25DH230123.Areas.Admin.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ProductID,CategoryID,ProductName,ProductDescription,ProductPrice,ProductImage")] Product product)
+        public ActionResult Edit([Bind(Include = "ProductID,CategoryID,ProductName,ProductDescription,ProductPrice,ProductImage,UploadImg")] Product product)
         {
             if (ModelState.IsValid)
             {
+                if (product.UploadImg != null)
+                {
+                    string filename = Path.GetFileName(product.UploadImg.FileName);​
+                    string savePath = "~/Content/images/";​
+                    product.ProductImage = savePath + filename;                    ​
+                    product.UploadImg.SaveAs(Path.Combine(Server.MapPath(savePath), filename));​
+                }​
                 db.Entry(product).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
