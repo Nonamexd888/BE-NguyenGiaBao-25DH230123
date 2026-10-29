@@ -3,34 +3,32 @@
 <head>
     <style>
         img {
-            height: 250px;
-            max-width: 250px;
+            max-width: 400px;
         }
     </style>
 </head>
 
 <div class="container-fluid">
     <div class="dl-horizontal">
-        <div class="col-md-3">
-            <img src="@Html.DisplayFor(model => model.ProductImage)" />
-        </div>
-        <div class="col-md-9 bg-info">
-            <dl>
-                <dt>Tên sản phẩm</dt>
-                <dd>@Html.DisplayFor(model => model.ProductName)</dd>
+        <div class="row">
+            <div class="col-md-4">
+                <img src="@Url.Content(Model.ProductImage)" />
+            </div>
+            <div class="col-md-8 bg-info">
+                <dl>
+                    <dt>Tên sản phẩm</dt>
+                    <dd>@Html.DisplayFor(model => model.ProductName)</dd>
 
-                <dt>Mô tả</dt>
-                <dd>@Html.DisplayFor(model => model.ProductDescription)</dd>
+                    <dt>Mô tả</dt>
+                    <dd>@Html.DisplayFor(model => model.ProductDescription)</dd>
 
-                <dt>Đơn giá</dt>
-                <dd>@Html.DisplayFor(model => model.ProductPrice)</dd>
+                    <dt>Đơn giá</dt>
+                    <dd>@Html.DisplayFor(model => model.ProductPrice)</dd>
 
-                <dt>Hình ảnh</dt>
-                <dd>@Html.DisplayFor(model => model.ProductImage)</dd>
-
-                <dt>Danh mục</dt>
-                <dd>@Html.DisplayFor(model => model.Category.CategoryName)</dd>
-            </dl>
+                    <dt>Danh mục</dt>
+                    <dd>@Html.DisplayFor(model => model.Category.CategoryName)</dd>
+                </dl>
+            </div>
         </div>
     </div>
 </div>

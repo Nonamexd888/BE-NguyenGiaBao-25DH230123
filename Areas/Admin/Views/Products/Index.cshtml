@@ -9,11 +9,12 @@
     <meta name="viewport" content="width=device-width" />
     <title>Search</title>
     <style>
-        search-container, .order-container {
+        .search-container, .order-container {
             padding-top: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
+            gap: 20px;
         }
     </style>
 </head>
@@ -38,7 +39,7 @@
                 @class = "form-control",
                 placeholder = "Nhập giá tối đa",
                 type = "number"
-            })
+            })            
             <button type="submit" class="btn btn-primary">Tìm kiếm</button>
         </div>
 
@@ -57,6 +58,7 @@
             new { sortOrder = "price_desc", searchTerm = Model.SearchTerm })
         </div>
     }
+
     @Html.Partial("PVListProduct", Model)
 </body>
 </html>

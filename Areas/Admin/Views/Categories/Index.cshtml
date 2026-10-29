@@ -21,9 +21,8 @@
             <td>
                 @Html.DisplayFor(modelItem => item.CategoryName)
             </td>
-            <td>
-                @Html.ActionLink("Cập nhập", "Edit", new { id = item.CategoryID }, new { @class = "btn btn-primary btn-sm" }) |
-                @Html.ActionLink("Chi tiết", "Details", new { id = item.CategoryID }, new { @class = "btn btn-primary btn-sm" }) | 
+            <td style="display: flex; gap: 15px;">
+                @Html.ActionLink("Cập nhập", "Edit", new { id = item.CategoryID }, new { @class = "btn btn-primary btn-sm" })
                 @Html.ActionLink("Xóa", "Delete", new { id = item.CategoryID }, new { @class = "btn btn-primary btn-sm" })
             </td>
         </tr>

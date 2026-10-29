@@ -103,25 +103,8 @@ namespace BE_NguyenGiaBao_25DH230123.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "ProductID,CategoryID,ProductName,ProductDescription,ProductPrice,ProductImage,UploadImg")] Product product)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && ProcessProductImage(product))
             {
-                if (product.UploadImg != null && product.UploadImg.ContentLength > 0)
-                {
-                    string filename = Path.GetFileName(
-                        product.UploadImg.FileName);
-
-                    string folderPath = Server.MapPath("~/Content/images/");
-
-                    if (!Directory.Exists(folderPath))
-                    {
-                        Directory.CreateDirectory(folderPath);
-                    }
-
-                    product.ProductImage = "~/Content/images/" + filename;
-
-                    product.UploadImg.SaveAs(
-                        Path.Combine(folderPath, filename));
-                }
                 db.Products.Add(product);
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -154,29 +137,13 @@ namespace BE_NguyenGiaBao_25DH230123.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "ProductID,CategoryID,ProductName,ProductDescription,ProductPrice,ProductImage,UploadImg")] Product product)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && ProcessProductImage(product))
             {
-                if (product.UploadImg != null && product.UploadImg.ContentLength > 0)
-                {
-                    string filename = Path.GetFileName(
-                        product.UploadImg.FileName);
-
-                    string folderPath = Server.MapPath("~/Content/images/");
-
-                    if (!Directory.Exists(folderPath))
-                    {
-                        Directory.CreateDirectory(folderPath);
-                    }
-
-                    product.ProductImage = "~/Content/images/" + filename;
-
-                    product.UploadImg.SaveAs(
-                        Path.Combine(folderPath, filename));
-                }
                 db.Entry(product).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
+
             ViewBag.CategoryID = new SelectList(db.Categories, "CategoryID", "CategoryName", product.CategoryID);
             return View(product);
         }
@@ -205,6 +172,55 @@ namespace BE_NguyenGiaBao_25DH230123.Areas.Admin.Controllers
             db.Products.Remove(product);
             db.SaveChanges();
             return RedirectToAction("Index");
+        }
+
+        // Hàm xử lý dùng chung create và edit
+        private static readonly string[] AllowedExt = { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+        // Trả về true nếu ảnh hợp lệ (đã gán product.ProductImage), false nếu lỗi
+        private bool ProcessProductImage(Product product)
+        {
+            // 1. Ưu tiên file upload
+            if (product.UploadImg != null && product.UploadImg.ContentLength > 0)
+            {
+                string filename = Path.GetFileName(product.UploadImg.FileName);
+                string ext = Path.GetExtension(filename).ToLower();
+
+                if (!AllowedExt.Contains(ext))
+                {
+                    ModelState.AddModelError("UploadImg", "Chỉ chấp nhận file ảnh: jpg, jpeg, png, gif, webp.");
+                    return false;
+                }
+
+                string folderPath = Server.MapPath("~/Content/images/");
+                if (!Directory.Exists(folderPath))
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
+
+                product.UploadImg.SaveAs(Path.Combine(folderPath, filename));
+                product.ProductImage = "~/Content/images/" + filename;
+                return true;
+            }
+
+            // 2. Không có file thì dùng link
+            if (!string.IsNullOrWhiteSpace(product.ProductImage))
+            {
+                product.ProductImage = product.ProductImage.Trim();
+
+                // đường dẫn nội bộ đã lưu sẵn (lúc Edit)
+                if (product.ProductImage.StartsWith("~/"))
+                    return true;
+
+                Uri uri;
+                if (Uri.TryCreate(product.ProductImage, UriKind.Absolute, out uri)
+                    && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps))
+                    return true;
+
+                ModelState.AddModelError("ProductImage", "Link ảnh không hợp lệ, phải bắt đầu bằng http:// hoặc https://");
+                return false;
+            }
+
+            return true; // không có ảnh cũng được
         }
 
         protected override void Dispose(bool disposing)

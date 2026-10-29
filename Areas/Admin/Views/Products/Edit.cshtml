@@ -4,24 +4,21 @@
     ViewBag.Title = "Edit";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
-
 <h2>Cập nhập sản phẩm</h2>
-
 
 @using (Html.BeginForm("Edit", "Products", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
-<div>
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
     @Html.HiddenFor(model => model.ProductID)
 
     @Html.Partial("PVCreateEditProduct", Model)
-</div>
-}
 
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
+    <div class="d-flex gap-2 mt-2">
+        <input type="submit" value="Lưu" class="btn btn-primary" />
+        @Html.ActionLink("Quay lại danh sách", "Index", null, new { @class = "btn btn-primary" })
+    </div>
+}
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")

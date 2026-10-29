@@ -4,21 +4,27 @@
     ViewBag.Title = "Delete";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
+<style>
+    .form-actions {
+        display: flex;
+        gap: 15px;
+    }
+</style>
 
-<h2 class="bg-success">Xóa sản phẩm</h2>
+<h2 style="background-color: #22B872;">Xóa sản phẩm</h2>
 
-<div class="alert-danger">Bạn thực sự muốn xóa danh muc này à?</div>
+<div class="col-md-4" style="background-color: #f8d7da; text-align: center; font-weight: bold; font-size: 20px;">Bạn thực sự muốn xóa danh mục này à?</div>
+<br />
 
 @Html.Partial("PVProductInfo", Model)
+<br />
 
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
 
     <div class="form-actions no-color">
-        <div class="col-md-offset-3 col-md-9">
-            @Html.ActionLink("Xóa", "Delete", new { id = Model.CategoryID }, new { @class = "btn btn-primary" })) |
-            @Html.ActionLink("Quay lai danh sach", "Index", null, new { @class = "btn btn-primary" })
-        </div>
+            <input type="submit" value="Xóa" class="btn btn-primary" />
+            @Html.ActionLink("Quay lai danh sách", "Index", null, new { @class = "btn btn-primary" })
     </div>
 }

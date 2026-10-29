@@ -35,9 +35,8 @@ namespace BE_NguyenGiaBao_25DH230123.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
 
-        [RegularExpression(@"[a-zA-Z0-9\s_\\.\ -: ])+(.png|.jpg|.gif|.PNG| .JPG| .GIF)$",
-            ErrorMessage = "Chi chap nhan cac dinh dang anh PNG, JPG va GIF")]
+        
         [NotMapped]
-        public HttpPostedFile UploadImg { get; set; }
+        public HttpPostedFileBase UploadImg { get; set; }
     }
 }
