@@ -1,0 +1,63 @@
+﻿@model PagedList.IPagedList<BE_NguyenGiaBao_25DH230123.Models.Order>
+@using PagedList.Mvc
+
+@{
+    ViewBag.Title = "Đơn hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    int? customerId = (int?)ViewBag.CustomerId;
+    string customerName = ViewBag.CustomerName as string;
+}
+
+<h2 style="background-color: #22B872;">
+    @(customerName == null ? "Danh sách đơn hàng" : "Đơn hàng của " + customerName)
+</h2>
+
+@if (Model.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead>
+                <tr>
+                    <th style="background-color: #22B872;">Mã đơn</th>
+                    <th style="background-color: #22B872;">Khách hàng</th>
+                    <th style="background-color: #22B872;">Ngày đặt</th>
+                    <th style="background-color: #22B872;">Tổng tiền</th>
+                    <th style="background-color: #22B872;">Thanh toán</th>
+                    <th style="background-color: #22B872;">Địa chỉ giao hàng</th>
+                    <th style="background-color: #22B872;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>#@item.OrderID</td>
+                        <td>@item.Customer.CustomerName</td>
+                        <td>@item.OrderDate.ToString("dd/MM/yyyy")</td>
+                        <td>@item.TotalAmount.ToString("N0") đ</td>
+                        <td>@item.PaymentStatus</td>
+                        <td>@item.AddressDelivery</td>
+                        <td>
+                            @Html.ActionLink("Chi tiết", "Details", new { id = item.OrderID }, new { @class = "btn btn-info btn-sm" })
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pagination-container">
+        @Html.PagedListPager(Model, page => Url.Action("Index", new { page, customerId = customerId }))
+    </div>
+}
+else
+{
+    <p>Chưa có đơn hàng nào.</p>
+}
+
+<div class="d-flex gap-2 mt-3">
+    @if (customerId != null)
+    {
+        @Html.ActionLink("Quay lại khách hàng", "Details", "Customers", new { id = customerId }, new { @class = "btn btn-secondary" })
+    }
+</div>

@@ -1,5 +1,6 @@
 ﻿using BE_NguyenGiaBao_25DH230123.Models;
 using BE_NguyenGiaBao_25DH230123.Models.ViewModel;
+using BE_NguyenGiaBao_25DH230123.Filters;
 using PagedList;
 using PagedList.Mvc;
 using System;
@@ -16,6 +17,7 @@ using System.Web.Mvc;
 
 namespace BE_NguyenGiaBao_25DH230123.Areas.Admin.Controllers
 {
+    [AdminAuthorize]
     public class ProductsController : Controller
     {
         private MyStoreEntities db = new MyStoreEntities();

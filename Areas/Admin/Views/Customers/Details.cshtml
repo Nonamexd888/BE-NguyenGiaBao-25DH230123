@@ -1,0 +1,36 @@
+﻿@model BE_NguyenGiaBao_25DH230123.Models.Customer
+
+@{
+    ViewBag.Title = "Chi tiết khách hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2 style="background-color: #22B872;">Chi tiết khách hàng</h2>
+
+<dl class="row">
+    <dt class="col-sm-3">Mã khách hàng</dt>
+    <dd class="col-sm-9">@Model.CustomerID</dd>
+
+    <dt class="col-sm-3">Họ tên</dt>
+    <dd class="col-sm-9">@Model.CustomerName</dd>
+
+    <dt class="col-sm-3">Số điện thoại</dt>
+    <dd class="col-sm-9">@Model.CustomerPhone</dd>
+
+    <dt class="col-sm-3">Email</dt>
+    <dd class="col-sm-9">@Model.CustomerEmail</dd>
+
+    <dt class="col-sm-3">Địa chỉ</dt>
+    <dd class="col-sm-9">@Model.CustomerAddress</dd>
+
+    <dt class="col-sm-3">Tên đăng nhập</dt>
+    <dd class="col-sm-9">@Model.Username</dd>
+
+    <dt class="col-sm-3">Số đơn hàng</dt>
+    <dd class="col-sm-9">@Model.Orders.Count</dd>
+</dl>
+
+<div class="d-flex gap-2 mt-3">
+    @Html.ActionLink("Xem đơn hàng", "Index", "Orders", new { customerId = Model.CustomerID }, new { @class = "btn btn-primary" })
+    @Html.ActionLink("Quay lại danh sách", "Index", null, new { @class = "btn btn-secondary" })
+</div>

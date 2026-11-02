@@ -7,9 +7,11 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using BE_NguyenGiaBao_25DH230123.Models;
+using BE_NguyenGiaBao_25DH230123.Filters;
 
 namespace BE_NguyenGiaBao_25DH230123.Areas.Admin.Controllers
 {
+    [AdminAuthorize]
     public class CategoriesController : Controller
     {
         private MyStoreEntities db = new MyStoreEntities();
