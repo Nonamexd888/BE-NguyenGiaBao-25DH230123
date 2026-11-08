@@ -33,7 +33,10 @@
             {
                 <tr>
                     <td>
-                        <img src="@Url.Content(item.ProductImage)"  alt="@item.ProductName"/>
+                        @if (!string.IsNullOrEmpty(item.ProductImage))
+                        {
+                            <img src="@Url.Content(item.ProductImage)" alt="@item.ProductName" />
+                        }
                     </td>
                     <td>@Html.DisplayFor(modelItem => item.ProductName)</td>
                     <td>@Html.DisplayFor(modelItem => item.ProductPrice)</td>

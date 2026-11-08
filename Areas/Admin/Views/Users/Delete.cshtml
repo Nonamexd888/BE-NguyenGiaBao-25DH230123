@@ -1,0 +1,27 @@
+﻿@model BE_NguyenGiaBao_25DH230123.Models.User
+
+@{
+    ViewBag.Title = "Xóa tài khoản Admin";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2 style="background-color: #22B872;">Xóa tài khoản Admin</h2>
+
+<h4 class="text-danger">Bạn có chắc chắn muốn xóa tài khoản này?</h4>
+
+<dl class="row">
+    <dt class="col-sm-3">Tên đăng nhập</dt>
+    <dd class="col-sm-9">@Model.Username</dd>
+
+    <dt class="col-sm-3">Vai trò</dt>
+    <dd class="col-sm-9">Quản trị viên</dd>
+</dl>
+
+@using (Html.BeginForm("Delete", "Users", new { id = Model.Username }, FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    <div class="d-flex gap-2">
+        <input type="submit" value="Xóa" class="btn btn-danger" />
+        @Html.ActionLink("Quay lại danh sách", "Index", null, new { @class = "btn btn-secondary" })
+    </div>
+}

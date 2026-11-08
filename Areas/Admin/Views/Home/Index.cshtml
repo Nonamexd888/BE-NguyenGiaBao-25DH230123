@@ -1,7 +1,50 @@
-﻿
+﻿@model List<BE_NguyenGiaBao_25DH230123.Models.ViewModel.CategoryStatVM>
+
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Trang quản trị";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h2>TRANG QUẢNG TRỊ</h2>
+<h2 style="background-color: #22B872;">Thống kê hàng hóa từng loại</h2>
+
+@if (Model.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead>
+                <tr>
+                    <th style="background-color: #22B872;">Loại hàng</th>
+                    <th style="background-color: #22B872;">Số lượng</th>
+                    <th style="background-color: #22B872;">Giá cao nhất</th>
+                    <th style="background-color: #22B872;">Giá thấp nhất</th>
+                    <th style="background-color: #22B872;">Giá trung bình</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var s in Model)
+                {
+                    <tr>
+                        <td>@s.CategoryName</td>
+                        <td>@s.ProductCount</td>
+                        <td>@(s.MaxPrice.HasValue ? s.MaxPrice.Value.ToString("N0") + " đ" : "—")</td>
+                        <td>@(s.MinPrice.HasValue ? s.MinPrice.Value.ToString("N0") + " đ" : "—")</td>
+                        <td>@(s.AvgPrice.HasValue ? s.AvgPrice.Value.ToString("N0") + " đ" : "—")</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>Tổng cộng</th>
+                    <th>@Model.Sum(s => s.ProductCount)</th>
+                    <th colspan="3"></th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+}
+else
+{
+    <p>Chưa có danh mục nào.</p>
+}
+
+@* TODO: phần biểu đồ tròn Google Chart (slide 56) làm sau, dùng lại Model này *@

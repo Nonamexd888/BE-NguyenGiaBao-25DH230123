@@ -67,6 +67,7 @@ namespace BE_NguyenGiaBao_25DH230123.Areas.Admin.Controllers
                     break;
             }
             model.SortOrder = sortOrder;
+            model.SearchTerm = searchTerm;  
 
             int pageNumber = page ?? 1;
             int pageSize = 2;
