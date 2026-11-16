@@ -1,0 +1,111 @@
+﻿@model BE_NguyenGiaBao_25DH230123.Models.ViewModel.ProfileVM
+
+@{
+    ViewBag.Title = "Thông tin tài khoản";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+    var current = (BE_NguyenGiaBao_25DH230123.Models.ViewModel.ProfileVM)ViewBag.Current;
+}
+
+<style>
+    .profile-page {
+        background-color: ghostwhite;
+        padding: 10px;
+    }
+
+    .profile-section {
+        background-color: white;
+        border: 1px groove #ffffff;
+        border-radius: 10px;
+        padding: 15px;
+        margin: 10px;
+    }
+</style>
+
+<h2>Thông tin tài khoản</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<div class="profile-page">
+    <div class="row">
+        @* Phần thông tin cá nhân *@
+        <div class="col-md-5">
+            <div class="profile-section">
+                <h4>Thông tin cá nhân</h4>
+                <dl class="row">
+                    <dt class="col-sm-4">Tên đăng nhập</dt>
+                    <dd class="col-sm-8">@current.Username</dd>
+
+                    <dt class="col-sm-4">Họ tên</dt>
+                    <dd class="col-sm-8">@current.CustomerName</dd>
+
+                    <dt class="col-sm-4">Số điện thoại</dt>
+                    <dd class="col-sm-8">@current.CustomerPhone</dd>
+
+                    <dt class="col-sm-4">Email</dt>
+                    <dd class="col-sm-8">@current.CustomerEmail</dd>
+
+                    <dt class="col-sm-4">Địa chỉ</dt>
+                    <dd class="col-sm-8">@current.CustomerAddress</dd>
+                </dl>
+            </div>
+        </div>
+
+        @* Phần thay đổi thông tin *@
+        <div class="col-md-7">
+            <div class="profile-section">
+                <h4>Cập nhật thông tin</h4>
+                @using (Html.BeginForm("UpdateProfile", "Account", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.CustomerPhone, new { @class = "form-label" })
+                        @Html.TextBoxFor(m => m.CustomerPhone, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.CustomerPhone, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.CustomerEmail, new { @class = "form-label" })
+                        @Html.TextBoxFor(m => m.CustomerEmail, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.CustomerEmail, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.CustomerAddress, new { @class = "form-label" })
+                        @Html.TextBoxFor(m => m.CustomerAddress, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.CustomerAddress, "", new { @class = "text-danger" })
+                    </div>
+                    <input type="submit" value="Lưu thay đổi" class="btn btn-info" />
+                }
+            </div>
+
+            <div class="profile-section">
+                <h4>Đổi mật khẩu</h4>
+                @using (Html.BeginForm("ChangePassword", "Account", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="mb-3">
+                        <label class="form-label" for="OldPassword">Mật khẩu hiện tại</label>
+                        @Html.Password("OldPassword", null, new { @class = "form-control" })
+                        @Html.ValidationMessage("OldPassword", "", new { @class = "text-danger" })
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="NewPassword">Mật khẩu mới</label>
+                        @Html.Password("NewPassword", null, new { @class = "form-control" })
+                        @Html.ValidationMessage("NewPassword", "", new { @class = "text-danger" })
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="ConfirmPassword">Xác nhận mật khẩu mới</label>
+                        @Html.Password("ConfirmPassword", null, new { @class = "form-control" })
+                        @Html.ValidationMessage("ConfirmPassword", "", new { @class = "text-danger" })
+                    </div>
+                    <input type="submit" value="Đổi mật khẩu" class="btn btn-info" />
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

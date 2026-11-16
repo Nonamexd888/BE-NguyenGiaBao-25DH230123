@@ -36,7 +36,7 @@
                         <td>@item.OrderDate.ToString("dd/MM/yyyy")</td>
                         <td>@item.TotalAmount.ToString("N0") đ</td>
                         <td>@item.PaymentStatus</td>
-                        <td>@item.AddressDelivery</td>
+                        <td>@item.ShippingAddress</td>
                         <td>
                             @Html.ActionLink("Chi tiết", "Details", new { id = item.OrderID }, new { @class = "btn btn-info btn-sm" })
                         </td>

@@ -1,0 +1,64 @@
+﻿@model List<BE_NguyenGiaBao_25DH230123.Models.Order>
+
+@{
+    ViewBag.Title = "Đơn hàng của tôi";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+    string currentStatus = ViewBag.Status as string;
+    string searchTerm = ViewBag.SearchTerm as string;
+    var statuses = ViewBag.Statuses as List<string>;
+}
+
+<h2>Đơn hàng của tôi</h2>
+
+<ul class="nav nav-tabs mb-3">
+    <li class="nav-item">
+        @Html.ActionLink("Tất cả đơn", "MyOrder", new { searchTerm = searchTerm },
+            new { @class = "nav-link" + (string.IsNullOrEmpty(currentStatus) ? " active" : "") })
+    </li>
+    @foreach (var s in statuses)
+    {
+        <li class="nav-item">
+            @Html.ActionLink(s, "MyOrder", new { status = s, searchTerm = searchTerm },
+                new { @class = "nav-link" + (s == currentStatus ? " active" : "") })
+        </li>
+    }
+</ul>
+
+@using (Html.BeginForm("MyOrder", "Order", FormMethod.Get, new { @class = "d-flex gap-2 mb-3" }))
+{
+    <input type="hidden" name="status" value="@currentStatus" />
+    <input type="text" name="searchTerm" value="@searchTerm" class="form-control" placeholder="Tìm đơn hàng theo Mã đơn hàng hoặc Tên sản phẩm" />
+    <button type="submit" class="btn btn-info" style="white-space:nowrap;">Tìm đơn hàng</button>
+}
+
+@if (!Model.Any())
+{
+    <p>Không có đơn hàng nào.</p>
+}
+
+@foreach (var order in Model)
+{
+    <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between">
+            <span>Đơn hàng #@order.OrderID &nbsp;|&nbsp; @order.OrderDate.ToString("dd/MM/yyyy")</span>
+            <span>@order.PaymentStatus</span>
+        </div>
+        <div class="card-body">
+            @foreach (var d in order.OrderDetails)
+            {
+                <div class="d-flex align-items-center mb-2">
+                    @if (!string.IsNullOrEmpty(d.Product.ProductImage))
+                    {
+                        <img src="@Url.Content(d.Product.ProductImage)" alt="@d.Product.ProductName" style="max-height:60px;" class="me-3" />
+                    }
+                    <div class="flex-grow-1">@d.Product.ProductName <span class="text-muted">x@d.Quantity</span></div>
+                    <div>@d.UnitPrice.ToString("N0")</div>
+                </div>
+            }
+        </div>
+        <div class="card-footer d-flex justify-content-between align-items-center">
+            <div>Tổng tiền: <strong class="text-danger">@order.TotalAmount.ToString("N0")</strong></div>
+            @Html.ActionLink("Xem chi tiết", "OrderSuccess", new { id = order.OrderID }, new { @class = "btn btn-outline-primary btn-sm" })
+        </div>
+    </div>
+}

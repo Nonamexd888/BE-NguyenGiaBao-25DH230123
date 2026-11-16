@@ -1,34 +1,48 @@
-﻿/*Style cho phần BANNER*/
+/* Các dòng có chú thích "ĐỔI" hoặc "THÊM" là phần chỉnh thêm so với file của cô.
+   Các dòng còn lại giữ nguyên như slide. */
+
+/*Style cho phần BANNER*/
 .banner {
     background-image: url('../images/banner.jpg'); /* SỬA: slide ghi ../../images, sai đường dẫn */
     background-size: cover;
+    background-position: center; /* THÊM */
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 300px;
+    min-height: 340px; /* ĐỔI: 300px */
+    border-radius: 12px; /* THÊM */
 }
 
 .banner-container {
     text-align: center;
     color: white;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.45); /* THÊM: chữ dễ đọc trên ảnh */
 }
 
     .banner-container h2 {
         font-size: 2.5rem;
+        font-weight: bold; /* THÊM */
     }
 
     .banner-container p {
-        font-size: 2rem;
+        font-size: 1.5rem; /* ĐỔI: 2rem */
     }
 
 .btnBanner {
     display: inline-block;
-    padding: 5px 20px;
+    padding: 8px 28px; /* ĐỔI: 5px 20px */
     background-color: darkorange;
     color: white;
     text-decoration: none;
     font-weight: bold;
+    border-radius: 6px; /* THÊM */
+    text-shadow: none; /* THÊM */
 }
+
+    .btnBanner:hover { /* THÊM */
+        background-color: #e07b00;
+        color: white;
+    }
 
 /*Style cho phần SEARCH*/
 .search-container {
@@ -39,6 +53,7 @@
 
 .search-input {
     width: 500px;
+    max-width: 100%; /* THÊM: không tràn màn hình nhỏ */
     padding: 10px;
     border: 1px solid #808080;
     border-radius: 5px 0 0 5px;
@@ -76,26 +91,35 @@
     display: flex;
     overflow-x: auto; /*cho phép cuộn ngang*/
     scroll-snap-type: x mandatory;
+    padding-bottom: 10px; /* THÊM: chừa chỗ cho thanh cuộn */
 }
 
 .fproduct-item { /*hiển thị dạng slider*/
-    width: 160px; /* điều chỉnh theo độ rộng màn hình */
-    max-height: 400px;
+    width: 220px; /* ĐỔI: 160px, to hơn cho dễ nhìn */
+    /* BỎ max-height: 400px, vì thẻ to hơn sẽ bị cắt mất chữ */
     margin: 10px;
     gap: 5px; /*khoảng cách giữa 2 item*/
-    border: 1px groove #808080;
+    border: 1px solid #d9d9d9; /* ĐỔI: 1px groove #808080 */
     border-radius: 10px;
+    overflow: hidden; /* THÊM: ảnh không đè ra ngoài góc bo */
+    background-color: white; /* THÊM */
     flex: 0 0 auto; /*để các sản phẩm không co giãn*/
     scroll-snap-align: start; /*để các sản phẩm dừng lại ở đầu khi cuộn*/
 }
 
+    .fproduct-item:hover { /* THÊM */
+        border-color: brown;
+    }
+
     .fproduct-item img {
+        display: block; /* THÊM */
+        width: 100%; /* THÊM: ảnh luôn bằng chiều rộng thẻ */
+        height: 200px; /* ĐỔI: max-height 160px */
+        object-fit: contain; /* THÊM: ảnh vừa khung, giữ nguyên tỉ lệ (muốn lấp đầy khung, cắt bớt rìa thì đổi thành cover) */
         padding: 5px;
-        max-width: 100%; /* SỬA: thêm dòng này để ảnh không tràn thẻ */
-        max-height: 160px;
-        vertical-align: middle;
-        background-color: transparent;
-    }   
+        vertical-align: middle; /* SỬA: slide ghi "central", không phải giá trị hợp lệ */
+        background-color: #f5f5f5; /* ĐỔI: transparent, để phần thừa quanh ảnh nhìn gọn */
+    }
 
 /*Style của LIST PRODUCT */
 .listProduct {
@@ -105,26 +129,36 @@
 .list-container {
     list-style-type: none;
     display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(100px,1fr));
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* ĐỔI: repeat(auto-fit, minmax(100px, 1fr)). auto-fill giữ thẻ không bị kéo giãn khi ít sản phẩm */
     gap: 20px;
     padding: 0;
     margin: 0;
 }
 
 .lproduct-item {
-    max-height: 500px;
-    border: 1px groove #808080;
+    /* BỎ max-height: 500px, vì thẻ to hơn sẽ bị cắt mất chữ */
+    border: 1px solid #d9d9d9; /* ĐỔI: 1px groove #808080 */
     border-radius: 10px;
+    overflow: hidden; /* THÊM */
+    background-color: white; /* THÊM */
+    margin-right: 0; /* THÊM: layout có luật li { margin-right: 20px } làm lệch khoảng cách */
 }
 
+    .lproduct-item:hover { /* THÊM */
+        border-color: brown;
+    }
+
     .lproduct-item img {
+        display: block; /* THÊM */
+        width: 100%; /* THÊM */
+        height: 220px; /* ĐỔI: max-height 120px */
+        object-fit: contain; /* THÊM: ảnh vừa khung, giữ nguyên tỉ lệ */
         padding: 5px;
-        max-width: 100%; /* SỬA: thêm dòng này để ảnh không tràn thẻ */
-        max-height: 120px; /* điều chỉnh theo độ rộng màn hình */
-        background-color: transparent;
+        background-color: #f5f5f5; /* ĐỔI: transparent */
     }
 
 /*các thuộc tính chung của FEATURE và NEW sản phẩm*/
+
 .featureProd h2, .listProduct h2 {
     font-size: 2em;
     margin-bottom: 20px;
@@ -143,6 +177,7 @@
     color: black;
     font-weight: bold;
     padding: 0px 5px 0px 5px;
+    min-height: 2.6em; /* THÊM: tên 1 hoặc 2 dòng thì thẻ vẫn cao bằng nhau */
 }
 
 .prodCate {
@@ -155,3 +190,46 @@
     color: dimgrey;
     padding: 0px 5px 0px 5px;
 }
+
+/* THÊM: tên sản phẩm (h5) ở khối "Sản phẩm tương tự" và "Sản phẩm bán chạy" */
+.fproduct-item h5, .lproduct-item h5 {
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 0 8px;
+    margin: 8px 0 2px 0;
+}
+
+/* THÊM: phân trang (Bootstrap 5 không có sẵn kiểu cho PagedList) */
+.pagination-container ul {
+    justify-content: center;
+    gap: 6px;
+    margin: 20px 0;
+}
+
+.pagination-container li {
+    margin-right: 0;
+}
+
+    .pagination-container li a,
+    .pagination-container li span {
+        display: inline-block;
+        min-width: 36px;
+        padding: 6px 12px;
+        text-align: center;
+        border: 1px solid #d9d9d9;
+        border-radius: 6px;
+        color: brown;
+        text-decoration: none;
+    }
+
+    .pagination-container li.active a,
+    .pagination-container li.active span {
+        background-color: brown;
+        border-color: brown;
+        color: white;
+    }
+
+    .pagination-container li.disabled a,
+    .pagination-container li.disabled span {
+        color: #aaa;
+    }

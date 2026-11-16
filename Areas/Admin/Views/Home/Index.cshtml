@@ -41,10 +41,57 @@
             </tfoot>
         </table>
     </div>
+
+    <div class="mb-3">
+        <button type="button" id="btnChart" class="btn btn-outline-secondary" onclick="toggleChart()">Xem biểu đồ</button>
+    </div>
+
+    <div id="chartSection" style="display:none;">
+        <h2 style="background-color: #22B872;">Biểu đồ thống kê</h2>
+        <div id="pieChart" style="width: 100%; height: 450px;"></div>
+    </div>
 }
 else
 {
     <p>Chưa có danh mục nào.</p>
 }
 
-@* TODO: phần biểu đồ tròn Google Chart (slide 56) làm sau, dùng lại Model này *@
+@section Scripts {
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+        // Dữ liệu lấy từ Model (chỉ các danh mục có sản phẩm)
+        var stats = @Html.Raw(Json.Encode(Model.Where(s => s.ProductCount > 0).Select(s => new { name = s.CategoryName, count = s.ProductCount })));
+
+        google.charts.load('current', { packages: ['corechart'] });
+
+        function drawChart() {
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Loại hàng');
+            data.addColumn('number', 'Số lượng');
+            stats.forEach(function (s) { data.addRow([s.name, s.count]); });
+
+            var options = {
+                title: 'TỶ LỆ HÀNG HÓA',
+                is3D: true,
+                legend: { position: 'right' },
+                height: 450
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('pieChart'));
+            chart.draw(data, options);
+        }
+
+        function toggleChart() {
+            var section = document.getElementById('chartSection');
+            var btn = document.getElementById('btnChart');
+            if (section.style.display === 'none') {
+                section.style.display = 'block';
+                btn.textContent = 'Ẩn biểu đồ';
+                google.charts.setOnLoadCallback(drawChart); // chỉ vẽ khi khung đã hiện, để biểu đồ có đúng kích thước
+            } else {
+                section.style.display = 'none';
+                btn.textContent = 'Xem biểu đồ';
+            }
+        }
+    </script>
+}

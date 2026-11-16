@@ -1,0 +1,8 @@
+﻿@model List<BE_NguyenGiaBao_25DH230123.Models.Category>
+
+<ul class="category-menu">
+    @foreach (var c in Model)
+    {
+        <li>@Html.ActionLink(c.CategoryName, "ProductList", "Home", new { categoryId = c.CategoryID, area = "" }, null)</li>
+    }
+</ul>

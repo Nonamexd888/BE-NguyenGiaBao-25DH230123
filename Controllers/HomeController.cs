@@ -71,6 +71,37 @@ namespace BE_NguyenGiaBao_25DH230123.Controllers
             return View(model);
         }
 
+        // GET: Home/ProductList?categoryId=1
+        // (SLIDE CHỈ MÔ TẢ, KHÔNG CÓ CODE: mình tự viết theo mô tả)
+        public ActionResult ProductList(int? categoryId, int? page)
+        {
+            if (categoryId == null)
+            {
+                return RedirectToAction("Index");
+            }
+            var category = db.Categories.Find(categoryId);
+            if (category == null)
+            {
+                return HttpNotFound();
+            }
+
+            var products = db.Products.Where(p => p.CategoryID == categoryId.Value);
+
+            ViewBag.CategoryName = category.CategoryName;
+            ViewBag.CategoryId = categoryId.Value;
+
+            int pageNumber = page ?? 1;
+            int pageSize = 4;  // Số sản phẩm mỗi trang
+            return View(products.OrderBy(p => p.ProductName).ToPagedList(pageNumber, pageSize));
+        }
+
+        // Menu danh mục hiển thị trên header của _CustomerLayout
+        [ChildActionOnly]
+        public ActionResult CategoriesPV()
+        {
+            return PartialView("_CategoriesPV", db.Categories.OrderBy(c => c.CategoryName).ToList());
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing) db.Dispose();
