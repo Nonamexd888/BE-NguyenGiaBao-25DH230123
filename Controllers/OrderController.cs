@@ -16,31 +16,24 @@ namespace BE_NguyenGiaBao_25DH230123.Controllers
         [Authorize]
         public ActionResult Checkout()
         {
-            //Kiểm tra giỏ hàng trong session,
-            //nếu giỏ hàng rỗng hoặc không có sản phẩm thì chuyển hướng về trang chủ
             var cart = Session["Cart"] as Cart;
-            if (cart == null || !cart.Items.Any())
-            {
-                return RedirectToAction("Index", "Home");
-            }
-            //Xác thực người dùng đã đăng nhập chưa, nếu chưa thì chuyển hướng tới trang Đăng nhập
+            if (cart == null || !cart.Items.Any()) return RedirectToAction("Index", "Home");
+
             var user = db.Users.SingleOrDefault(u => u.Username == User.Identity.Name);
-            if (user == null) { return RedirectToAction("Login", "Account"); }
-            //Lấy thông tin khách hàng từ CSDL, nếu chưa có thì chuyển hướng tới trang Đăng nhập
-            //nếu có rồi thì lấy địa chỉ của khách hàng và gán vào ShippingAddress của CheckoutVM
+            if (user == null) return RedirectToAction("Login", "Account");
+
             var customer = db.Customers.SingleOrDefault(c => c.Username == user.Username);
-            if (customer == null) { return RedirectToAction("Login", "Account"); }
+            if (customer == null) return RedirectToAction("Login", "Account");
 
             var model = new CheckoutVM
-            { //Tạo dữ liệu hiển thị cho CheckoutVM
-                CartItems = cart.Items.ToList(), //Lấy danh sách các sản phẩm trong giỏ hàng
-                TotalAmount = cart.TotalValue(), //Tổng giá trị của các mặt hàng trong giỏ
-                OrderDate = DateTime.Now, //Mặc định lấy bằng thời điểm đặt hàng
-                ShippingAddress = customer.CustomerAddress, // Lấy địa chỉ mặc định từ bảng Customer
-                CustomerID = customer.CustomerID,// Lấy mã khách hàng từ bảng Customer
-                Username = customer.Username // Lấy tên đăng nhập từ bảng Customer
+            {
+                CartItems = cart.Items.ToList(),
+                TotalAmount = cart.TotalValue(),
+                OrderDate = DateTime.Now,
+                ShippingAddress = customer.CustomerAddress,
+                CustomerID = customer.CustomerID,
+                Username = customer.Username
             };
-
             return View(model);
         }
 
@@ -51,26 +44,27 @@ namespace BE_NguyenGiaBao_25DH230123.Controllers
         public ActionResult Checkout(CheckoutVM model)
         {
             var cart = Session["Cart"] as Cart;
-            //Nếu giỏ hàng rỗng sẽ điều hướng tới trang Home
-            if (cart == null || !cart.Items.Any()) { return RedirectToAction("Index", "Home"); }
-            //Nếu người dùng chưa đăng nhập sẽ điều hướng tới trang Login
+            if (cart == null || !cart.Items.Any()) return RedirectToAction("Index", "Home");
+
             var user = db.Users.SingleOrDefault(u => u.Username == User.Identity.Name);
-            if (user == null) { return RedirectToAction("Login", "Account"); }
-            //nếu khách hàng không khớp với tên đăng nhập, sẽ điều hướng tới trang Login
+            if (user == null) return RedirectToAction("Login", "Account");
+
             var customer = db.Customers.SingleOrDefault(c => c.Username == user.Username);
-            if (customer == null) { return RedirectToAction("Login", "Account"); }
+            if (customer == null) return RedirectToAction("Login", "Account");
 
             if (ModelState.IsValid)
             {
-                // Thiết lập PaymentStatus dựa trên PaymentMethod
+                // Map trạng thái thanh toán
                 string paymentStatus = "Chưa thanh toán";
                 switch (model.PaymentMethod)
                 {
                     case "Tiền mặt": paymentStatus = "Thanh toán tiền mặt"; break;
                     case "Mua trước trả sau": paymentStatus = "Trả góp"; break;
-                    default: paymentStatus = "Chưa thanh toán"; break;
                 }
-                //Tạo đơn hàng và chi tiết đơn hàng liên quan
+
+                // Map trạng thái đơn hàng (Mặc định khi mới đặt là "Đang xử lý" hoặc "Chờ thanh toán")
+                string orderStatus = model.PaymentMethod == "Tiền mặt" ? "Đang xử lý" : "Chờ thanh toán";
+
                 var order = new Order
                 {
                     CustomerID = customer.CustomerID,
@@ -80,6 +74,8 @@ namespace BE_NguyenGiaBao_25DH230123.Controllers
                     PaymentMethod = model.PaymentMethod,
                     ShippingMethod = model.ShippingMethod,
                     ShippingAddress = model.ShippingAddress,
+                    // Nếu DB có cột Status thì thêm vào, không thì bỏ qua
+                    // Status = orderStatus, 
                     OrderDetails = cart.Items.Select(item => new OrderDetail
                     {
                         ProductID = item.ProductID,
@@ -87,16 +83,14 @@ namespace BE_NguyenGiaBao_25DH230123.Controllers
                         UnitPrice = item.UnitPrice
                     }).ToList()
                 };
-                //Lưu đơn hàng vào CSDL
+
                 db.Orders.Add(order);
                 db.SaveChanges();
-                // Xóa giỏ hàng sau khi đặt hàng thành công
-                Session["Cart"] = null;
-                // Điều hướng tới trang Xác nhận đơn hàng
+
+                Session["Cart"] = null; // Xóa giỏ hàng
                 return RedirectToAction("OrderSuccess", new { id = order.OrderID });
             }
 
-            // Form lỗi: nạp lại dữ liệu để hiển thị lại trang
             model.CartItems = cart.Items.ToList();
             model.TotalAmount = cart.TotalValue();
             model.CustomerID = customer.CustomerID;
@@ -108,44 +102,91 @@ namespace BE_NguyenGiaBao_25DH230123.Controllers
         [Authorize]
         public ActionResult OrderSuccess(int id)
         {
-            var order = db.Orders.Include("OrderDetails")
+            var order = db.Orders.Include("OrderDetails.Product")
                 .SingleOrDefault(o => o.OrderID == id && o.Customer.Username == User.Identity.Name);
-            if (order == null)
-            {
-                return HttpNotFound();
-            }
-
+            if (order == null) return HttpNotFound();
             return View(order);
         }
 
-        // GET: Order/MyOrder  (SLIDE 47 CHỈ CÓ HÌNH, mình tự viết theo giao diện)
+        // GET: Order/MyOrder
         [Authorize]
-        public ActionResult MyOrder(string status, string searchTerm)
+        public ActionResult MyOrder(string tab = "all", string searchTerm = "", bool showAll = false)
         {
             var customer = db.Customers.SingleOrDefault(c => c.Username == User.Identity.Name);
             if (customer == null) { return RedirectToAction("Login", "Account"); }
 
-            IQueryable<Order> orders = db.Orders.Include("OrderDetails.Product")
+            var orders = db.Orders
+                .Include("OrderDetails.Product")
                 .Where(o => o.CustomerID == customer.CustomerID);
 
-            if (!string.IsNullOrWhiteSpace(status))
-            {
-                orders = orders.Where(o => o.PaymentStatus == status);
-            }
+            // 1. Tìm kiếm theo Mã đơn hoặc Tên sản phẩm
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 int orderId;
-                int.TryParse(searchTerm, out orderId);
-                orders = orders.Where(o => o.OrderID == orderId ||
+                bool isNumber = int.TryParse(searchTerm, out orderId);
+                orders = orders.Where(o => (isNumber && o.OrderID == orderId) ||
                     o.OrderDetails.Any(d => d.Product.ProductName.Contains(searchTerm)));
             }
 
-            ViewBag.Status = status;
-            ViewBag.SearchTerm = searchTerm;
-            ViewBag.Statuses = db.Orders.Where(o => o.CustomerID == customer.CustomerID)
-                .Select(o => o.PaymentStatus).Distinct().ToList();
+            // 2. Lọc theo Tab (Giả sử dựa vào PaymentStatus hoặc Status của bạn)
+            // Lưu ý: Bạn cần điều chỉnh chuỗi so sánh này cho khớp với dữ liệu thực tế trong DB
+            if (tab != "all")
+            {
+                if (tab == "pending") orders = orders.Where(o => o.PaymentStatus == "Chưa thanh toán");
+                else if (tab == "processing") orders = orders.Where(o => o.PaymentStatus == "Thanh toán tiền mặt"); // Tạm map
+                else if (tab == "shipping") orders = orders.Where(o => o.ShippingMethod != null); // Tạm map
+                else if (tab == "delivered") orders = orders.Where(o => o.PaymentStatus == "Đã thanh toán"); // Tạm map
+                else if (tab == "cancelled") orders = orders.Where(o => o.PaymentStatus == "Đã hủy"); // Tạm map
+            }
 
-            return View(orders.OrderByDescending(o => o.OrderDate).ThenByDescending(o => o.OrderID).ToList());
+            // 3. Sắp xếp mới nhất lên đầu
+            orders = orders.OrderByDescending(o => o.OrderDate).ThenByDescending(o => o.OrderID);
+
+            // 4. Xử lý hiển thị (2 đơn / trạng thái hoặc 50 đơn nếu Xem thêm)
+            var resultList = orders.ToList();
+            if (showAll)
+            {
+                resultList = resultList.Take(50).ToList();
+            }
+            else if (tab == "all")
+            {
+                // Gom nhóm theo trạng thái, mỗi nhóm lấy 2 đơn
+                var tempList = new List<Order>();
+                foreach (var group in resultList.GroupBy(o => o.PaymentStatus))
+                {
+                    tempList.AddRange(group.Take(2));
+                }
+                resultList = tempList.OrderByDescending(o => o.OrderDate).ToList();
+            }
+            else
+            {
+                resultList = resultList.Take(2).ToList();
+            }
+
+            ViewBag.CurrentTab = tab;
+            ViewBag.SearchTerm = searchTerm;
+            ViewBag.ShowAll = showAll;
+
+            return View(resultList);
+        }
+
+        // Hàm xử lý nút "Mua lại"
+        [Authorize]
+        public ActionResult Reorder(int id)
+        {
+            var order = db.Orders.Include("OrderDetails.Product").SingleOrDefault(o => o.OrderID == id);
+            if (order == null) return HttpNotFound();
+
+            var cart = Session["Cart"] as Cart ?? new Cart();
+            foreach (var item in order.OrderDetails)
+            {
+                // Thêm vào giỏ với số lượng = 1 theo yêu cầu
+                cart.AddItem(item.ProductID, item.Product.ProductImage, item.Product.ProductName,
+                             item.UnitPrice, 1, item.Product.Category.CategoryName);
+            }
+            Session["Cart"] = cart;
+
+            return RedirectToAction("Index2", "Cart");
         }
 
         protected override void Dispose(bool disposing)

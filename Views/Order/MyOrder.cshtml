@@ -3,62 +3,247 @@
 @{
     ViewBag.Title = "Đơn hàng của tôi";
     Layout = "~/Views/Shared/_CustomerLayout.cshtml";
-    string currentStatus = ViewBag.Status as string;
+    string currentTab = ViewBag.CurrentTab as string ?? "all";
     string searchTerm = ViewBag.SearchTerm as string;
-    var statuses = ViewBag.Statuses as List<string>;
+    bool showAll = ViewBag.ShowAll != null && (bool)ViewBag.ShowAll;
 }
 
-<h2>Đơn hàng của tôi</h2>
-
-<ul class="nav nav-tabs mb-3">
-    <li class="nav-item">
-        @Html.ActionLink("Tất cả đơn", "MyOrder", new { searchTerm = searchTerm },
-            new { @class = "nav-link" + (string.IsNullOrEmpty(currentStatus) ? " active" : "") })
-    </li>
-    @foreach (var s in statuses)
-    {
-        <li class="nav-item">
-            @Html.ActionLink(s, "MyOrder", new { status = s, searchTerm = searchTerm },
-                new { @class = "nav-link" + (s == currentStatus ? " active" : "") })
-        </li>
+<style>
+    /* CSS mô phỏng giao diện mẫu của cô */
+    .my-order-page {
+        background-color: #f5f5f5;
+        padding: 20px 0;
     }
-</ul>
 
-@using (Html.BeginForm("MyOrder", "Order", FormMethod.Get, new { @class = "d-flex gap-2 mb-3" }))
-{
-    <input type="hidden" name="status" value="@currentStatus" />
-    <input type="text" name="searchTerm" value="@searchTerm" class="form-control" placeholder="Tìm đơn hàng theo Mã đơn hàng hoặc Tên sản phẩm" />
-    <button type="submit" class="btn btn-info" style="white-space:nowrap;">Tìm đơn hàng</button>
-}
+    .my-order-container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+    }
 
-@if (!Model.Any())
-{
-    <p>Không có đơn hàng nào.</p>
-}
+    /* Tabs */
+    .nav-tabs {
+        border-bottom: 1px solid #eee;
+    }
 
-@foreach (var order in Model)
-{
-    <div class="card mb-3">
-        <div class="card-header d-flex justify-content-between">
-            <span>Đơn hàng #@order.OrderID &nbsp;|&nbsp; @order.OrderDate.ToString("dd/MM/yyyy")</span>
-            <span>@order.PaymentStatus</span>
-        </div>
-        <div class="card-body">
-            @foreach (var d in order.OrderDetails)
+        .nav-tabs .nav-link {
+            color: #555;
+            border: none;
+            font-weight: 500;
+            padding: 10px 20px;
+        }
+
+            .nav-tabs .nav-link.active {
+                color: #0d6efd;
+                border-bottom: 2px solid #0d6efd;
+                background: transparent;
+            }
+
+    /* Search Box */
+    .search-box {
+        position: relative;
+        margin: 20px 0;
+    }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 20px 12px 40px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 15px;
+            color: #888;
+        }
+
+        .search-box button {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            background: transparent;
+            border: none;
+            color: #0d6efd;
+            font-weight: bold;
+            padding: 0 20px;
+            border-left: 1px solid #ddd;
+        }
+
+    /* Order Card */
+    .status-group-title {
+        font-weight: bold;
+        margin: 20px 0 15px 0;
+        font-size: 1.1em;
+        color: #333;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .order-card {
+        border: 1px solid #eee;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+
+    .product-img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+
+    .product-name {
+        font-weight: 500;
+        margin-bottom: 5px;
+    }
+
+    .product-brand {
+        color: #888;
+        font-size: 0.9em;
+        margin-bottom: 5px;
+    }
+
+    .product-price {
+        font-weight: bold;
+        color: #333;
+    }
+
+    /* Footer của Card */
+    .order-footer {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #eee;
+    }
+
+    .btn-action {
+        background: #fff;
+        border: 1px solid #0d6efd;
+        color: #0d6efd;
+        padding: 5px 15px;
+        border-radius: 4px;
+        text-decoration: none;
+        margin-left: 10px;
+        font-size: 0.9em;
+    }
+
+        .btn-action:hover {
+            background: #0d6efd;
+            color: #fff;
+        }
+
+    .empty-state {
+        text-align: center;
+        padding: 50px 0;
+    }
+</style>
+
+<div class="my-order-page">
+    <div class="container">
+        <div class="my-order-container">
+            <h3>Đơn hàng của tôi</h3>
+
+            <!-- Thanh Tabs -->
+            <ul class="nav nav-tabs mb-4">
+                <li class="nav-item">
+                    <a class="nav-link @(currentTab == "all" ? "active" : "")" href="@Url.Action("MyOrder", new { tab = "all", searchTerm = searchTerm })">Tất cả đơn</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(currentTab == "pending" ? "active" : "")" href="@Url.Action("MyOrder", new { tab = "pending", searchTerm = searchTerm })">Chờ thanh toán</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(currentTab == "processing" ? "active" : "")" href="@Url.Action("MyOrder", new { tab = "processing", searchTerm = searchTerm })">Đang xử lý</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(currentTab == "shipping" ? "active" : "")" href="@Url.Action("MyOrder", new { tab = "shipping", searchTerm = searchTerm })">Đang vận chuyển</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(currentTab == "delivered" ? "active" : "")" href="@Url.Action("MyOrder", new { tab = "delivered", searchTerm = searchTerm })">Đã giao</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(currentTab == "cancelled" ? "active" : "")" href="@Url.Action("MyOrder", new { tab = "cancelled", searchTerm = searchTerm })">Đã hủy</a>
+                </li>
+            </ul>
+
+            <!-- Thanh Tìm kiếm -->
+            @using (Html.BeginForm("MyOrder", "Order", FormMethod.Get, new { @class = "search-box" }))
             {
-                <div class="d-flex align-items-center mb-2">
-                    @if (!string.IsNullOrEmpty(d.Product.ProductImage))
-                    {
-                        <img src="@Url.Content(d.Product.ProductImage)" alt="@d.Product.ProductName" style="max-height:60px;" class="me-3" />
-                    }
-                    <div class="flex-grow-1">@d.Product.ProductName <span class="text-muted">x@d.Quantity</span></div>
-                    <div>@d.UnitPrice.ToString("N0")</div>
+                <input type="hidden" name="tab" value="@currentTab" />
+                <i class="fas fa-search"></i>
+                <input type="text" name="searchTerm" value="@searchTerm" placeholder="Tìm đơn hàng theo Mã đơn hàng, Nhà bán hoặc Tên sản phẩm" />
+                <button type="submit">Tìm đơn hàng</button>
+            }
+
+            <!-- Danh sách đơn hàng -->
+            @if (Model == null || !Model.Any())
+            {
+                <div class="empty-state">
+                    <p class="fw-bold">BẠN CHƯA CÓ ĐƠN HÀNG NÀO. HÃY ĐẶT ĐƠN NGAY.</p>
+                    <a href="@Url.Action("Index", "Home")" class="btn btn-primary mt-3">Về trang chủ</a>
                 </div>
             }
-        </div>
-        <div class="card-footer d-flex justify-content-between align-items-center">
-            <div>Tổng tiền: <strong class="text-danger">@order.TotalAmount.ToString("N0")</strong></div>
-            @Html.ActionLink("Xem chi tiết", "OrderSuccess", new { id = order.OrderID }, new { @class = "btn btn-outline-primary btn-sm" })
+            else
+            {
+                foreach (var group in Model.GroupBy(o => o.PaymentStatus))
+                {
+                    <div class="status-group-title">
+                        @if (group.Key == "Giao hàng thành công" || group.Key == "Đã giao")
+                        {<i class="fas fa-truck text-success"></i> }
+                        else if (group.Key == "Đã hủy")
+                        { <i class="fas fa-ban text-danger"></i> }
+                        else
+                        { <i class="fas fa-box text-warning"></i>}
+
+                        @group.Key
+                    </div>
+
+                    foreach (var order in group)
+                    {
+                        <div class="order-card">
+                            @foreach (var detail in order.OrderDetails.Take(2)) // Chỉ hiện tối đa 2 sản phẩm
+                            {
+                                <div class="d-flex mb-3">
+                                    <img src="@Url.Content(detail.Product.ProductImage)" alt="@detail.Product.ProductName" class="product-img me-3" />
+                                    <div class="flex-grow-1">
+                                        <div class="product-name">@detail.Product.ProductName</div>
+                                        <div class="product-brand"><i class="fas fa-store"></i> @detail.Product.Category.CategoryName</div>
+                                        <div class="d-flex justify-content-between align-items-center mt-2">
+                                            <span class="product-price">@detail.UnitPrice.ToString("N0") đ</span>
+                                            <span class="text-muted small">x@(detail.Quantity)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            @if (order.OrderDetails.Count > 2)
+                            {
+                                <a href="@Url.Action("OrderSuccess", new { id = order.OrderID })" class="text-decoration-none small">Xem thêm @(order.OrderDetails.Count - 2) sản phẩm</a>
+                            }
+
+                            <div class="order-footer">
+                                <span class="me-3">Tổng tiền: <strong>@order.TotalAmount.ToString("N0") đ</strong></span>
+                                <a href="@Url.Action("Reorder", "Order", new { id = order.OrderID })" class="btn-action">Mua lại</a>
+                                <a href="@Url.Action("OrderSuccess", "Order", new { id = order.OrderID })" class="btn-action">Xem chi tiết</a>
+                            </div>
+                        </div>
+                    }
+
+                    // Nút Xem thêm
+                    if (!showAll && group.Count() >= 2) // Nếu có từ 2 đơn trở lên
+                    {
+                        <div class="text-center mb-4">
+                            <a href="@Url.Action("MyOrder", new { tab = currentTab, searchTerm = searchTerm, showAll = true })" class="btn btn-outline-secondary btn-sm">Xem thêm</a>
+                        </div>
+                    }
+                }
+            }
         </div>
     </div>
-}
+</div>

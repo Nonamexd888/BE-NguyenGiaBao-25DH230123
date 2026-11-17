@@ -6,11 +6,43 @@
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
     int? customerId = (int?)ViewBag.CustomerId;
     string customerName = ViewBag.CustomerName as string;
+
+    // Lấy lại các giá trị tìm kiếm để giữ trạng thái trên form
+    string searchName = ViewBag.SearchName as string;
+    string searchStatus = ViewBag.SearchStatus as string;
+    string searchDate = ViewBag.SearchDate as string;
 }
 
 <h2 style="background-color: #22B872;">
     @(customerName == null ? "Danh sách đơn hàng" : "Đơn hàng của " + customerName)
 </h2>
+
+<!-- FORM TÌM KIẾM (Giống ảnh mẫu của cô) -->
+<div class="row mb-3">
+    @using (Html.BeginForm("Index", "Orders", FormMethod.Get, new { @class = "form-inline" }))
+    {
+        <div class="col-md-3">
+            <label>Tên khách hàng</label>
+            <input type="text" name="searchName" value="@searchName" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label>Trạng thái thanh toán</label>
+            <select name="searchStatus" class="form-control">
+                <option value="">-- Tất cả --</option>
+                <option value="Chưa thanh toán" @(searchStatus == "Chưa thanh toán" ? "selected" : "")>Chưa thanh toán</option>
+                <option value="Thanh toán tiền mặt" @(searchStatus == "Thanh toán tiền mặt" ? "selected" : "")>Thanh toán tiền mặt</option>
+                <!-- Bạn có thể thêm các trạng thái khác nếu DB có -->
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label>Ngày đặt hàng</label>
+            <input type="date" name="searchDate" value="@searchDate" class="form-control" />
+        </div>
+        <div class="col-md-3" style="display: flex; align-items: flex-end;">
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Tìm kiếm</button>
+        </div>
+    }
+</div>
 
 @if (Model.Any())
 {
@@ -18,12 +50,11 @@
         <table class="table table-striped table-hover align-middle">
             <thead>
                 <tr>
-                    <th style="background-color: #22B872;">Mã đơn</th>
-                    <th style="background-color: #22B872;">Khách hàng</th>
-                    <th style="background-color: #22B872;">Ngày đặt</th>
-                    <th style="background-color: #22B872;">Tổng tiền</th>
-                    <th style="background-color: #22B872;">Thanh toán</th>
-                    <th style="background-color: #22B872;">Địa chỉ giao hàng</th>
+                    <th style="background-color: #22B872;">Ngày đặt hàng</th>
+                    <th style="background-color: #22B872;">Tên khách hàng</th>
+                    <th style="background-color: #22B872;">Tổng giá trị</th>
+                    <th style="background-color: #22B872;">Trạng thái thanh toán</th>
+                    <th style="background-color: #22B872;">Phương thức giao hàng</th>
                     <th style="background-color: #22B872;"></th>
                 </tr>
             </thead>
@@ -31,14 +62,24 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td>#@item.OrderID</td>
+                        <!-- Cô giáo để format mặc định nên tôi để lại format này để giống ảnh -->
+                        <td>@item.OrderDate.ToString("M/d/yyyy h:mm:ss tt")</td>
                         <td>@item.Customer.CustomerName</td>
-                        <td>@item.OrderDate.ToString("dd/MM/yyyy")</td>
-                        <td>@item.TotalAmount.ToString("N0") đ</td>
+                        <td>@item.TotalAmount.ToString("N0")</td>
                         <td>@item.PaymentStatus</td>
-                        <td>@item.ShippingAddress</td>
                         <td>
-                            @Html.ActionLink("Chi tiết", "Details", new { id = item.OrderID }, new { @class = "btn btn-info btn-sm" })
+                            @if (string.IsNullOrEmpty(item.ShippingMethod))
+                            {
+                                <span>Chi tiết đơn hàng</span>
+                            }
+                            else
+                            {
+                                @item.ShippingMethod
+                            }
+                        </td>
+                        <td>
+                            <!-- Đổi text thành "Chi tiết đơn hàng" giống ảnh mẫu -->
+                            @Html.ActionLink("Chi tiết đơn hàng", "Details", new { id = item.OrderID }, new { @class = "btn btn-info btn-sm" })
                         </td>
                     </tr>
                 }
@@ -47,12 +88,15 @@
     </div>
 
     <div class="pagination-container">
-        @Html.PagedListPager(Model, page => Url.Action("Index", new { page, customerId = customerId }))
+        @Html.PagedListPager(Model, page => Url.Action("Index", new { page, searchName = searchName, searchStatus = searchStatus, searchDate = searchDate, customerId = customerId }))
     </div>
 }
 else
 {
-    <p>Chưa có đơn hàng nào.</p>
+    <!-- Hiển thị thông báo KHÔNG CÓ giống yêu cầu file PPT -->
+    <div class="alert alert-warning text-center fw-bold" role="alert">
+        KHÔNG CÓ
+    </div>
 }
 
 <div class="d-flex gap-2 mt-3">

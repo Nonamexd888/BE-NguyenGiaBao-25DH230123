@@ -17,11 +17,13 @@ namespace BE_NguyenGiaBao_25DH230123.Areas.Admin.Controllers
         private MyStoreEntities db = new MyStoreEntities();
 
         // GET: Admin/Orders  hoặc  Admin/Orders?customerId=3
-        public ActionResult Index(int? customerId, int? page)
+        // Thêm các tham số tìm kiếm: searchName, searchStatus, searchDate
+        public ActionResult Index(int? customerId, int? page, string searchName, string searchStatus, string searchDate)
         {
             IQueryable<Order> orders = db.Orders.Include(o => o.Customer);
             Customer customer = null;
 
+            // 1. Lọc theo khách hàng (nếu đi từ trang chi tiết khách hàng)
             if (customerId.HasValue)
             {
                 customer = db.Customers.Find(customerId.Value);
@@ -32,13 +34,43 @@ namespace BE_NguyenGiaBao_25DH230123.Areas.Admin.Controllers
                 orders = orders.Where(o => o.CustomerID == customerId.Value);
             }
 
+            // 2. Lọc theo Tên khách hàng (Tìm kiếm)
+            if (!string.IsNullOrEmpty(searchName))
+            {
+                orders = orders.Where(o => o.Customer.CustomerName.Contains(searchName));
+            }
+
+            // 3. Lọc theo Trạng thái thanh toán (Tìm kiếm)
+            if (!string.IsNullOrEmpty(searchStatus))
+            {
+                orders = orders.Where(o => o.PaymentStatus == searchStatus);
+            }
+
+            // 4. Lọc theo Ngày đặt hàng (Tìm kiếm)
+            if (!string.IsNullOrEmpty(searchDate))
+            {
+                DateTime date;
+                if (DateTime.TryParse(searchDate, out date))
+                {
+                    // Chỉ so sánh phần Ngày (bỏ qua giờ phút giây)
+                    orders = orders.Where(o => DbFunctions.TruncateTime(o.OrderDate) == date);
+                }
+            }
+
+            // Lưu lại các giá trị tìm kiếm để hiển thị lại trên Form
             ViewBag.CustomerId = customerId;
             ViewBag.CustomerName = customer != null ? customer.CustomerName : null;
+            ViewBag.SearchName = searchName;
+            ViewBag.SearchStatus = searchStatus;
+            ViewBag.SearchDate = searchDate;
 
+            // Sắp xếp mới nhất lên đầu
             orders = orders.OrderByDescending(o => o.OrderDate).ThenByDescending(o => o.OrderID);
 
+            // Phân trang: Yêu cầu file PPT là 15 đơn hàng/trang
             int pageNumber = page ?? 1;
-            int pageSize = 10;
+            int pageSize = 15;
+
             return View(orders.ToPagedList(pageNumber, pageSize));
         }
 
@@ -58,6 +90,38 @@ namespace BE_NguyenGiaBao_25DH230123.Areas.Admin.Controllers
             if (order == null)
             {
                 return HttpNotFound();
+            }
+            return View(order);
+        }
+
+        // GET: Admin/Orders/UpdateStatus/5
+        public ActionResult UpdateStatus(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Order order = db.Orders.Find(id);
+            if (order == null)
+            {
+                return HttpNotFound();
+            }
+            // Trả về view cập nhật trạng thái (Bạn cần tạo file UpdateStatus.cshtml)
+            return View(order);
+        }
+
+        // POST: Admin/Orders/UpdateStatus/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UpdateStatus(int id, string paymentStatus, string shippingMethod)
+        {
+            var order = db.Orders.Find(id);
+            if (order != null)
+            {
+                order.PaymentStatus = paymentStatus;
+                order.ShippingMethod = shippingMethod;
+                db.SaveChanges();
+                return RedirectToAction("Details", new { id = order.OrderID });
             }
             return View(order);
         }

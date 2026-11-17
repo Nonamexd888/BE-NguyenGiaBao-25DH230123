@@ -7,57 +7,70 @@
 
 <h2 style="background-color: #22B872;">Chi tiết đơn hàng #@Model.OrderID</h2>
 
-<dl class="row">
-    <dt class="col-sm-3">Khách hàng</dt>
-    <dd class="col-sm-9">@Html.ActionLink(Model.Customer.CustomerName, "Details", "Customers", new { id = Model.CustomerID }, null)</dd>
+<div class="row">
+    <!-- CỘT TRÁI: THÔNG TIN ĐƠN HÀNG -->
+    <div class="col-md-5">
+        <dl class="row">
+            <dt class="col-sm-5">Ngày đặt hàng</dt>
+            <dd class="col-sm-7">@Model.OrderDate.ToString("M/d/yyyy h:mm:ss tt")</dd>
 
-    <dt class="col-sm-3">Ngày đặt</dt>
-    <dd class="col-sm-9">@Model.OrderDate.ToString("dd/MM/yyyy")</dd>
+            <dt class="col-sm-5">Tên khách hàng</dt>
+            <dd class="col-sm-7">@Html.ActionLink(Model.Customer.CustomerName, "Details", "Customers", new { id = Model.CustomerID }, null)</dd>
 
-    <dt class="col-sm-3">Thanh toán</dt>
-    <dd class="col-sm-9">@Model.PaymentStatus</dd>
+            <dt class="col-sm-5">Tổng giá trị</dt>
+            <dd class="col-sm-7">@Model.TotalAmount.ToString("N0")</dd>
 
-    <dt class="col-sm-3">Địa chỉ giao hàng</dt>
-    <dd class="col-sm-9">@Model.ShippingAddress</dd>
-</dl>
+            <dt class="col-sm-5">Phương thức thanh toán</dt>
+            <dd class="col-sm-7">@Model.PaymentMethod</dd> <!-- Nếu có trường này trong DB -->
 
-<div class="table-responsive">
-    <table class="table table-striped align-middle">
-        <thead>
-            <tr>
-                <th style="background-color: #22B872;">Ảnh</th>
-                <th style="background-color: #22B872;">Sản phẩm</th>
-                <th style="background-color: #22B872;">Đơn giá</th>
-                <th style="background-color: #22B872;">Số lượng</th>
-                <th style="background-color: #22B872;">Thành tiền</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var d in Model.OrderDetails)
-            {
-                <tr>
-                    <td>
-                        @if (!string.IsNullOrEmpty(d.Product.ProductImage))
-                        {
-                            <img src="@Url.Content(d.Product.ProductImage)" alt="@d.Product.ProductName" style="max-height: 60px;" />
-                        }
-                    </td>
-                    <td>@d.Product.ProductName</td>
-                    <td>@d.UnitPrice.ToString("N0") đ</td>
-                    <td>@d.Quantity</td>
-                    <td>@((d.Quantity * d.UnitPrice).ToString("N0")) đ</td>
-                </tr>
-            }
-        </tbody>
-        <tfoot>
-            <tr>
-                <th colspan="4" class="text-end">Tổng cộng</th>
-                <th>@Model.TotalAmount.ToString("N0") đ</th>
-            </tr>
-        </tfoot>
-    </table>
+            <dt class="col-sm-5">Trạng thái thanh toán</dt>
+            <dd class="col-sm-7">@Model.PaymentStatus</dd>
+
+            <dt class="col-sm-5">Phương thức giao hàng</dt>
+            <dd class="col-sm-7">@Model.ShippingMethod</dd>
+
+            <dt class="col-sm-5">Địa chỉ giao hàng</dt>
+            <dd class="col-sm-7">@Model.ShippingAddress</dd>
+        </dl>
+    </div>
+
+    <!-- CỘT PHẢI: DANH SÁCH SẢN PHẨM -->
+    <div class="col-md-7">
+        <div class="table-responsive">
+            <table class="table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th style="background-color: #22B872;">Sản phẩm</th>
+                        <th style="background-color: #22B872;">Số lượng</th>
+                        <th style="background-color: #22B872;">Đơn giá</th>
+                        <th style="background-color: #22B872;">Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var d in Model.OrderDetails)
+                    {
+                        <tr>
+                            <td>
+                                @if (!string.IsNullOrEmpty(d.Product.ProductImage))
+                                {
+                                    <img src="@Url.Content(d.Product.ProductImage)" alt="@d.Product.ProductName" style="max-height: 60px; margin-right: 10px;" />
+                                }
+                                @d.Product.ProductName
+                            </td>
+                            <td>@d.Quantity</td>
+                            <td>@d.UnitPrice.ToString("N0")</td>
+                            <td>@((d.Quantity * d.UnitPrice).ToString("N0"))</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
+<!-- CÁC NÚT HÀNH ĐỘNG GIỐNG ẢNH MẪU CỦA CÔ -->
 <div class="d-flex gap-2 mt-3">
-    @Html.ActionLink("Quay lại đơn hàng", "Index", new { customerId = Model.CustomerID }, new { @class = "btn btn-secondary" })
+    <!-- Nút Cập nhật trạng thái (Cần thêm hàm UpdateStatus vào Controller) -->
+    <a href="@Url.Action("UpdateStatus", "Orders", new { id = Model.OrderID })" class="btn btn-primary">Cập nhật trạng thái</a>
+    <a href="@Url.Action("Index", "Orders")" class="btn btn-primary">Quay lại danh sách</a>
 </div>
