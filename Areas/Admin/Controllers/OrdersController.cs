@@ -105,21 +105,25 @@ namespace BE_NguyenGiaBao_25DH230123.Areas.Admin.Controllers
             {
                 return HttpNotFound();
             }
-            // Trả về view cập nhật trạng thái
             return View(order);
         }
 
         // POST: Admin/Orders/UpdateStatus/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult UpdateStatus(int id, string paymentStatus, string shippingMethod)
+        public ActionResult UpdateStatus(int id, string paymentStatus, string shippingMethod, string shippingAddress)
         {
             var order = db.Orders.Find(id);
             if (order != null)
             {
+                // Cập nhật các trường
                 order.PaymentStatus = paymentStatus;
                 order.ShippingMethod = shippingMethod;
+                order.ShippingAddress = shippingAddress;
+
                 db.SaveChanges();
+
+                // Cập nhật xong thì quay lại trang Chi tiết
                 return RedirectToAction("Details", new { id = order.OrderID });
             }
             return View(order);

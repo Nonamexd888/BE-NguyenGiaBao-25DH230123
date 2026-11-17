@@ -1,0 +1,49 @@
+﻿@model BE_NguyenGiaBao_25DH230123.Models.Order
+
+@{
+    ViewBag.Title = "Cập nhật trạng thái đơn hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2 style="background-color: #22B872; padding: 10px;">Cập nhật trạng thái đơn hàng #@Model.OrderID</h2>
+
+@using (Html.BeginForm("UpdateStatus", "Orders", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.OrderID)
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label class="form-label fw-bold">Trạng thái thanh toán</label>
+                @Html.DropDownListFor(m => m.PaymentStatus, new SelectList(new[]
+                {
+                    "Chưa thanh toán",
+                    "Thanh toán tiền mặt",
+                    "Chuyển khoản",
+                    "Đã hủy"
+                }, Model.PaymentStatus), new { @class = "form-select" })
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Phương thức giao hàng</label>
+                @Html.DropDownListFor(m => m.ShippingMethod, new SelectList(new[]
+                {
+                    "Giao hàng nhanh",
+                    "Giao hàng tiết kiệm",
+                    "Chi tiết đơn hàng"
+                }, Model.ShippingMethod), new { @class = "form-select" })
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Địa chỉ giao hàng</label>
+                @Html.TextBoxFor(m => m.ShippingAddress, new { @class = "form-control" })
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                <a href="@Url.Action("Details", "Orders", new { id = Model.OrderID })" class="btn btn-secondary">Hủy</a>
+            </div>
+        </div>
+    </div>
+}
