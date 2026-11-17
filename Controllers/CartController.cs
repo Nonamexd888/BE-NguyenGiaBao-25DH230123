@@ -13,20 +13,17 @@ namespace BE_NguyenGiaBao_25DH230123.Controllers
     {
         private MyStoreEntities db = new MyStoreEntities();
 
-        // Hàm lấy dịch vụ giỏ hàng
         private CartService GetCartService()
         {
             return new CartService(Session);
         }
 
-        // Hiển thị giỏ hàng không gom nhóm theo danh mục
         public ActionResult Index()
         {
             var cart = GetCartService().GetCart();
             return View(cart);
         }
 
-        // Hiển thị giỏ hàng đã gom nhóm sản phẩm theo danh mục
         public ActionResult Index2(int? page)
         {
             var cart = GetCartService().GetCart();
@@ -39,16 +36,13 @@ namespace BE_NguyenGiaBao_25DH230123.Controllers
                     && !cart.Items.Any(ci => ci.ProductID == p.ProductID)).ToList();
             }
 
-            // Đoạn code liên quan tới phân trang
-            // Lấy số trang hiện tại (mặc định là trang 1 nếu không có giá trị)
             int pageNumber = page ?? 1;
-            int pageSize = cart.PageSize;  // Số sản phẩm mỗi trang
+            int pageSize = cart.PageSize;
 
             cart.SimilarProducts = similarProducts.OrderBy(p => p.ProductID).ToPagedList(pageNumber, pageSize);
             return View(cart);
         }
 
-        // Thêm sản phẩm vào giỏ
         public ActionResult AddToCart(int id, int quantity = 1)
         {
             var product = db.Products.Find(id);
@@ -61,7 +55,6 @@ namespace BE_NguyenGiaBao_25DH230123.Controllers
             return RedirectToAction("Index2");
         }
 
-        // Xóa sản phẩm khỏi giỏ
         public ActionResult RemoveFromCart(int id)
         {
             var cartService = GetCartService();
@@ -69,7 +62,6 @@ namespace BE_NguyenGiaBao_25DH230123.Controllers
             return RedirectToAction("Index2");
         }
 
-        // Làm trống giỏ hàng
         public ActionResult ClearCart()
         {
             GetCartService().ClearCart();

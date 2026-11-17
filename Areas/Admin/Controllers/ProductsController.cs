@@ -179,7 +179,7 @@ namespace BE_NguyenGiaBao_25DH230123.Areas.Admin.Controllers
 
         // Hàm xử lý dùng chung create và edit
         private static readonly string[] AllowedExt = { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
-        // Trả về true nếu ảnh hợp lệ (đã gán product.ProductImage), false nếu lỗi
+
         private bool ProcessProductImage(Product product)
         {
             // 1. Ưu tiên file upload
@@ -205,12 +205,10 @@ namespace BE_NguyenGiaBao_25DH230123.Areas.Admin.Controllers
                 return true;
             }
 
-            // 2. Không có file thì dùng link
             if (!string.IsNullOrWhiteSpace(product.ProductImage))
             {
                 product.ProductImage = product.ProductImage.Trim();
 
-                // đường dẫn nội bộ đã lưu sẵn (lúc Edit)
                 if (product.ProductImage.StartsWith("~/"))
                     return true;
 
@@ -223,7 +221,7 @@ namespace BE_NguyenGiaBao_25DH230123.Areas.Admin.Controllers
                 return false;
             }
 
-            return true; // không có ảnh cũng được
+            return true;
         }
 
         protected override void Dispose(bool disposing)

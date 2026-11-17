@@ -1,50 +1,45 @@
-/* Các dòng có chú thích "ĐỔI" hoặc "THÊM" là phần chỉnh thêm so với file của cô.
-   Các dòng còn lại giữ nguyên như slide. */
-
-/*Style cho phần BANNER*/
 .banner {
-    background-image: url('../images/banner.jpg'); /* SỬA: slide ghi ../../images, sai đường dẫn */
+    background-image: url('../images/banner.jpg');
     background-size: cover;
-    background-position: center; /* THÊM */
+    background-position: center;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 340px; /* ĐỔI: 300px */
-    border-radius: 12px; /* THÊM */
+    min-height: 340px;
+    border-radius: 12px;
 }
 
 .banner-container {
     text-align: center;
     color: white;
-    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.45); /* THÊM: chữ dễ đọc trên ảnh */
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
 }
 
     .banner-container h2 {
         font-size: 2.5rem;
-        font-weight: bold; /* THÊM */
+        font-weight: bold;
     }
 
     .banner-container p {
-        font-size: 1.5rem; /* ĐỔI: 2rem */
+        font-size: 1.5rem;
     }
 
 .btnBanner {
     display: inline-block;
-    padding: 8px 28px; /* ĐỔI: 5px 20px */
+    padding: 8px 28px;
     background-color: darkorange;
     color: white;
     text-decoration: none;
     font-weight: bold;
-    border-radius: 6px; /* THÊM */
-    text-shadow: none; /* THÊM */
+    border-radius: 6px;
+    text-shadow: none;
 }
 
-    .btnBanner:hover { /* THÊM */
+    .btnBanner:hover {
         background-color: #e07b00;
         color: white;
     }
 
-/*Style cho phần SEARCH*/
 .search-container {
     display: flex;
     justify-content: center;
@@ -53,7 +48,7 @@
 
 .search-input {
     width: 500px;
-    max-width: 100%; /* THÊM: không tràn màn hình nhỏ */
+    max-width: 100%;
     padding: 10px;
     border: 1px solid #808080;
     border-radius: 5px 0 0 5px;
@@ -75,53 +70,49 @@
     text-align: center;
 }
 
-    .searchProd h2 { /* SỬA: slide ghi #searchProd, nhưng thẻ section dùng class chứ không có id */
+    .searchProd h2 {
         font-size: 2em;
         margin-bottom: 20px;
         color: brown;
     }
 
-/*Style của FEATURE PRODUCT*/
 .featureProd {
     text-align: left;
 }
 
 .feature-container {
-    /* justify-content: center;*/
     display: flex;
-    overflow-x: auto; /*cho phép cuộn ngang*/
+    overflow-x: auto;
     scroll-snap-type: x mandatory;
-    padding-bottom: 10px; /* THÊM: chừa chỗ cho thanh cuộn */
+    padding-bottom: 10px;
 }
 
-.fproduct-item { /*hiển thị dạng slider*/
-    width: 220px; /* ĐỔI: 160px, to hơn cho dễ nhìn */
-    /* BỎ max-height: 400px, vì thẻ to hơn sẽ bị cắt mất chữ */
+.fproduct-item {
+    width: 220px;
     margin: 10px;
-    gap: 5px; /*khoảng cách giữa 2 item*/
-    border: 1px solid #d9d9d9; /* ĐỔI: 1px groove #808080 */
+    gap: 5px;
+    border: 1px solid #d9d9d9;
     border-radius: 10px;
-    overflow: hidden; /* THÊM: ảnh không đè ra ngoài góc bo */
-    background-color: white; /* THÊM */
-    flex: 0 0 auto; /*để các sản phẩm không co giãn*/
-    scroll-snap-align: start; /*để các sản phẩm dừng lại ở đầu khi cuộn*/
+    overflow: hidden;
+    background-color: white;
+    flex: 0 0 auto;
+    scroll-snap-align: start;
 }
 
-    .fproduct-item:hover { /* THÊM */
+    .fproduct-item:hover {
         border-color: brown;
     }
 
     .fproduct-item img {
-        display: block; /* THÊM */
-        width: 100%; /* THÊM: ảnh luôn bằng chiều rộng thẻ */
-        height: 200px; /* ĐỔI: max-height 160px */
-        object-fit: contain; /* THÊM: ảnh vừa khung, giữ nguyên tỉ lệ (muốn lấp đầy khung, cắt bớt rìa thì đổi thành cover) */
+        display: block;
+        width: 100%;
+        height: 200px;
+        object-fit: contain;
         padding: 5px;
-        vertical-align: middle; /* SỬA: slide ghi "central", không phải giá trị hợp lệ */
-        background-color: #f5f5f5; /* ĐỔI: transparent, để phần thừa quanh ảnh nhìn gọn */
+        vertical-align: middle;
+        background-color: #f5f5f5;
     }
 
-/*Style của LIST PRODUCT */
 .listProduct {
     text-align: left;
 }
@@ -129,35 +120,32 @@
 .list-container {
     list-style-type: none;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* ĐỔI: repeat(auto-fit, minmax(100px, 1fr)). auto-fill giữ thẻ không bị kéo giãn khi ít sản phẩm */
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 20px;
     padding: 0;
     margin: 0;
 }
 
 .lproduct-item {
-    /* BỎ max-height: 500px, vì thẻ to hơn sẽ bị cắt mất chữ */
-    border: 1px solid #d9d9d9; /* ĐỔI: 1px groove #808080 */
+    border: 1px solid #d9d9d9;
     border-radius: 10px;
-    overflow: hidden; /* THÊM */
-    background-color: white; /* THÊM */
-    margin-right: 0; /* THÊM: layout có luật li { margin-right: 20px } làm lệch khoảng cách */
+    overflow: hidden;
+    background-color: white;
+    margin-right: 0;
 }
 
-    .lproduct-item:hover { /* THÊM */
+    .lproduct-item:hover {
         border-color: brown;
     }
 
     .lproduct-item img {
-        display: block; /* THÊM */
-        width: 100%; /* THÊM */
-        height: 220px; /* ĐỔI: max-height 120px */
-        object-fit: contain; /* THÊM: ảnh vừa khung, giữ nguyên tỉ lệ */
+        display: block;
+        width: 100%;
+        height: 220px;
+        object-fit: contain;
         padding: 5px;
-        background-color: #f5f5f5; /* ĐỔI: transparent */
+        background-color: #f5f5f5;
     }
-
-/*các thuộc tính chung của FEATURE và NEW sản phẩm*/
 
 .featureProd h2, .listProduct h2 {
     font-size: 2em;
@@ -177,7 +165,7 @@
     color: black;
     font-weight: bold;
     padding: 0px 5px 0px 5px;
-    min-height: 2.6em; /* THÊM: tên 1 hoặc 2 dòng thì thẻ vẫn cao bằng nhau */
+    min-height: 2.6em;
 }
 
 .prodCate {
@@ -191,7 +179,6 @@
     padding: 0px 5px 0px 5px;
 }
 
-/* THÊM: tên sản phẩm (h5) ở khối "Sản phẩm tương tự" và "Sản phẩm bán chạy" */
 .fproduct-item h5, .lproduct-item h5 {
     font-size: 1rem;
     font-weight: bold;
@@ -199,7 +186,6 @@
     margin: 8px 0 2px 0;
 }
 
-/* THÊM: phân trang (Bootstrap 5 không có sẵn kiểu cho PagedList) */
 .pagination-container ul {
     justify-content: center;
     gap: 6px;

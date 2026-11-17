@@ -31,7 +31,6 @@
         </ul>
     </section>
 
-    <!-- Hiển thị phân trang -->
     <div class="pagination-container">
         @Html.PagedListPager(Model.SimilarProducts, page => Url.Action("Index2", new { page }))
     </div>

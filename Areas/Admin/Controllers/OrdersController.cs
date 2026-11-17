@@ -16,14 +16,13 @@ namespace BE_NguyenGiaBao_25DH230123.Areas.Admin.Controllers
     {
         private MyStoreEntities db = new MyStoreEntities();
 
-        // GET: Admin/Orders  hoặc  Admin/Orders?customerId=3
-        // Thêm các tham số tìm kiếm: searchName, searchStatus, searchDate
+        // GET: Admin/Orders  or  Admin/Orders?customerId=3
         public ActionResult Index(int? customerId, int? page, string searchName, string searchStatus, string searchDate)
         {
             IQueryable<Order> orders = db.Orders.Include(o => o.Customer);
             Customer customer = null;
 
-            // 1. Lọc theo khách hàng (nếu đi từ trang chi tiết khách hàng)
+            // 1. Lọc theo khách hàng
             if (customerId.HasValue)
             {
                 customer = db.Customers.Find(customerId.Value);
@@ -34,25 +33,25 @@ namespace BE_NguyenGiaBao_25DH230123.Areas.Admin.Controllers
                 orders = orders.Where(o => o.CustomerID == customerId.Value);
             }
 
-            // 2. Lọc theo Tên khách hàng (Tìm kiếm)
+            // 2. Lọc theo Tên khách hàng
             if (!string.IsNullOrEmpty(searchName))
             {
                 orders = orders.Where(o => o.Customer.CustomerName.Contains(searchName));
             }
 
-            // 3. Lọc theo Trạng thái thanh toán (Tìm kiếm)
+            // 3. Lọc theo Trạng thái thanh toán
             if (!string.IsNullOrEmpty(searchStatus))
             {
                 orders = orders.Where(o => o.PaymentStatus == searchStatus);
             }
 
-            // 4. Lọc theo Ngày đặt hàng (Tìm kiếm)
+            // 4. Lọc theo Ngày đặt hàng
             if (!string.IsNullOrEmpty(searchDate))
             {
                 DateTime date;
                 if (DateTime.TryParse(searchDate, out date))
                 {
-                    // Chỉ so sánh phần Ngày (bỏ qua giờ phút giây)
+                    // Chỉ lấy phần Ngày
                     orders = orders.Where(o => DbFunctions.TruncateTime(o.OrderDate) == date);
                 }
             }
@@ -106,7 +105,7 @@ namespace BE_NguyenGiaBao_25DH230123.Areas.Admin.Controllers
             {
                 return HttpNotFound();
             }
-            // Trả về view cập nhật trạng thái (Bạn cần tạo file UpdateStatus.cshtml)
+            // Trả về view cập nhật trạng thái
             return View(order);
         }
 

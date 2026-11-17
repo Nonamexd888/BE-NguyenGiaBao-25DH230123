@@ -54,7 +54,6 @@ namespace BE_NguyenGiaBao_25DH230123.Controllers
 
             if (ModelState.IsValid)
             {
-                // Map trạng thái thanh toán
                 string paymentStatus = "Chưa thanh toán";
                 switch (model.PaymentMethod)
                 {
@@ -62,7 +61,6 @@ namespace BE_NguyenGiaBao_25DH230123.Controllers
                     case "Mua trước trả sau": paymentStatus = "Trả góp"; break;
                 }
 
-                // Map trạng thái đơn hàng (Mặc định khi mới đặt là "Đang xử lý" hoặc "Chờ thanh toán")
                 string orderStatus = model.PaymentMethod == "Tiền mặt" ? "Đang xử lý" : "Chờ thanh toán";
 
                 var order = new Order
@@ -74,8 +72,7 @@ namespace BE_NguyenGiaBao_25DH230123.Controllers
                     PaymentMethod = model.PaymentMethod,
                     ShippingMethod = model.ShippingMethod,
                     ShippingAddress = model.ShippingAddress,
-                    // Nếu DB có cột Status thì thêm vào, không thì bỏ qua
-                    // Status = orderStatus, 
+
                     OrderDetails = cart.Items.Select(item => new OrderDetail
                     {
                         ProductID = item.ProductID,
@@ -119,7 +116,6 @@ namespace BE_NguyenGiaBao_25DH230123.Controllers
                 .Include("OrderDetails.Product")
                 .Where(o => o.CustomerID == customer.CustomerID);
 
-            // 1. Tìm kiếm theo Mã đơn hoặc Tên sản phẩm
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 int orderId;
@@ -128,8 +124,6 @@ namespace BE_NguyenGiaBao_25DH230123.Controllers
                     o.OrderDetails.Any(d => d.Product.ProductName.Contains(searchTerm)));
             }
 
-            // 2. Lọc theo Tab (Giả sử dựa vào PaymentStatus hoặc Status của bạn)
-            // Lưu ý: Bạn cần điều chỉnh chuỗi so sánh này cho khớp với dữ liệu thực tế trong DB
             if (tab != "all")
             {
                 if (tab == "pending") orders = orders.Where(o => o.PaymentStatus == "Chưa thanh toán");
@@ -139,10 +133,8 @@ namespace BE_NguyenGiaBao_25DH230123.Controllers
                 else if (tab == "cancelled") orders = orders.Where(o => o.PaymentStatus == "Đã hủy"); // Tạm map
             }
 
-            // 3. Sắp xếp mới nhất lên đầu
             orders = orders.OrderByDescending(o => o.OrderDate).ThenByDescending(o => o.OrderID);
 
-            // 4. Xử lý hiển thị (2 đơn / trạng thái hoặc 50 đơn nếu Xem thêm)
             var resultList = orders.ToList();
             if (showAll)
             {
@@ -150,7 +142,6 @@ namespace BE_NguyenGiaBao_25DH230123.Controllers
             }
             else if (tab == "all")
             {
-                // Gom nhóm theo trạng thái, mỗi nhóm lấy 2 đơn
                 var tempList = new List<Order>();
                 foreach (var group in resultList.GroupBy(o => o.PaymentStatus))
                 {
@@ -180,7 +171,6 @@ namespace BE_NguyenGiaBao_25DH230123.Controllers
             var cart = Session["Cart"] as Cart ?? new Cart();
             foreach (var item in order.OrderDetails)
             {
-                // Thêm vào giỏ với số lượng = 1 theo yêu cầu
                 cart.AddItem(item.ProductID, item.Product.ProductImage, item.Product.ProductName,
                              item.UnitPrice, 1, item.Product.Category.CategoryName);
             }

@@ -8,7 +8,6 @@
 <h2 style="background-color: #22B872;">Chi tiết đơn hàng #@Model.OrderID</h2>
 
 <div class="row">
-    <!-- CỘT TRÁI: THÔNG TIN ĐƠN HÀNG -->
     <div class="col-md-5">
         <dl class="row">
             <dt class="col-sm-5">Ngày đặt hàng</dt>
@@ -21,7 +20,7 @@
             <dd class="col-sm-7">@Model.TotalAmount.ToString("N0")</dd>
 
             <dt class="col-sm-5">Phương thức thanh toán</dt>
-            <dd class="col-sm-7">@Model.PaymentMethod</dd> <!-- Nếu có trường này trong DB -->
+            <dd class="col-sm-7">@Model.PaymentMethod</dd>
 
             <dt class="col-sm-5">Trạng thái thanh toán</dt>
             <dd class="col-sm-7">@Model.PaymentStatus</dd>
@@ -34,7 +33,6 @@
         </dl>
     </div>
 
-    <!-- CỘT PHẢI: DANH SÁCH SẢN PHẨM -->
     <div class="col-md-7">
         <div class="table-responsive">
             <table class="table table-striped align-middle">
@@ -68,9 +66,8 @@
     </div>
 </div>
 
-<!-- CÁC NÚT HÀNH ĐỘNG GIỐNG ẢNH MẪU CỦA CÔ -->
 <div class="d-flex gap-2 mt-3">
-    <!-- Nút Cập nhật trạng thái (Cần thêm hàm UpdateStatus vào Controller) -->
+
     <a href="@Url.Action("UpdateStatus", "Orders", new { id = Model.OrderID })" class="btn btn-primary">Cập nhật trạng thái</a>
     <a href="@Url.Action("Index", "Orders")" class="btn btn-primary">Quay lại danh sách</a>
 </div>

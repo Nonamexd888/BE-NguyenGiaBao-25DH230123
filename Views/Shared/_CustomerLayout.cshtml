@@ -1,15 +1,11 @@
 ﻿@{
-    // lấy thông tin giỏ hàng
     var cart = Session["Cart"] as BE_NguyenGiaBao_25DH230123.Models.ViewModel.Cart;
 
-    //Tạo đối tượng ViewBag.pmmodel dạng PersonalMenuVM, và lưu trong ViewBag,
-    //khởi tạo giá trị dựa trên thông tin tài khoản đăng nhập
     ViewBag.pmmodel = new BE_NguyenGiaBao_25DH230123.Models.ViewModel.PersonalMenuVM
     {
         IsLoggedIn = User.Identity.IsAuthenticated,
         Username = User.Identity.IsAuthenticated ? User.Identity.Name : string.Empty
     };
-    //nếu giỏ hàng không rỗng thì gán số lượng mặt hàng trong giỏ cho CartCount
     if (cart != null && cart.Items.Any())
     {
         ViewBag.pmmodel.CartCount = cart.Items.Count();
@@ -27,7 +23,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 
     <style>
-        /* Basic styling for the menu */
         ul {
             list-style-type: none;
             padding: 0;

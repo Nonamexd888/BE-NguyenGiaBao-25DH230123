@@ -1,32 +1,29 @@
-/* Các dòng có chú thích "ĐỔI" hoặc "THÊM" là phần chỉnh thêm so với file của cô.
-   Các dòng còn lại giữ nguyên như slide. */
-
 .pro {
-    padding: 30px 10px 30px 10px; /* ĐỔI: 50px 10px 50px 10px */
+    padding: 30px 10px 30px 10px;
     background-color: ghostwhite;
 }
 
 .pro-section {
     background-color: white;
-    border: 1px solid #e3e3e3; /* ĐỔI: 1px groove #ffffff (màu trắng nên không thấy viền trên nền ghostwhite) */
+    border: 1px solid #e3e3e3; 
     border-radius: 10px;
-    padding: 12px; /* ĐỔI: slide để dòng padding 5px trong chú thích, mình bật lại */
+    padding: 12px; 
     margin: 10px;
 }
 
-    .pro-section > img { /* ĐỔI: slide ghi ".pro-section img" (áp cả cho ảnh trong khối tương tự / bán chạy), mình chỉ áp cho ảnh chính */
-        display: block; /* THÊM */
-        width: 100%; /* THÊM: ảnh to bằng cột */
-        max-height: 420px; /* ĐỔI: 250px */
-        object-fit: contain; /* THÊM: ảnh vừa khung, giữ nguyên tỉ lệ */
+    .pro-section > img { 
+        display: block; 
+        width: 100%; 
+        max-height: 420px; 
+        object-fit: contain;
         padding: 5px;
-        background-color: #f5f5f5; /* THÊM */
-        border-radius: 8px; /* THÊM */
+        background-color: #f5f5f5;
+        border-radius: 8px;
     }
 
 .pro-price {
     font-weight: bolder;
-    font-size: 1.6rem; /* ĐỔI: larger */
+    font-size: 1.6rem;
     color: red;
 }
 
@@ -34,15 +31,14 @@
     font-weight: lighter;
 }
 
-.pro-section .btn { /* THÊM: nút "Thêm vào giỏ hàng" rộng bằng cột cho dễ bấm */
+.pro-section .btn {
     width: 100%;
 }
 
-.pro-section .lproduct-item img { /* THÊM: ảnh ở khối "Sản phẩm bán chạy" (cột phải hẹp) thấp hơn cho vừa cột */
+.pro-section .lproduct-item img {
     height: 170px;
 }
 
-/* THÊM (slide không có): Bootstrap 5 không tự xếp 3 cột cạnh nhau như Bootstrap 3 */
 .div-horizontal {
     display: flex;
     flex-wrap: wrap;

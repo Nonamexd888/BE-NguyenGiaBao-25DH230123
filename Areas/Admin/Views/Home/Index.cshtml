@@ -59,7 +59,6 @@ else
 @section Scripts {
     <script src="https://www.gstatic.com/charts/loader.js"></script>
     <script>
-        // Dữ liệu lấy từ Model (chỉ các danh mục có sản phẩm)
         var stats = @Html.Raw(Json.Encode(Model.Where(s => s.ProductCount > 0).Select(s => new { name = s.CategoryName, count = s.ProductCount })));
 
         google.charts.load('current', { packages: ['corechart'] });
@@ -87,7 +86,7 @@ else
             if (section.style.display === 'none') {
                 section.style.display = 'block';
                 btn.textContent = 'Ẩn biểu đồ';
-                google.charts.setOnLoadCallback(drawChart); // chỉ vẽ khi khung đã hiện, để biểu đồ có đúng kích thước
+                google.charts.setOnLoadCallback(drawChart);
             } else {
                 section.style.display = 'none';
                 btn.textContent = 'Xem biểu đồ';

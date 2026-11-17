@@ -30,15 +30,13 @@ namespace BE_NguyenGiaBao_25DH230123.Controllers
                     ModelState.AddModelError("Username", "Tên đăng nhập này đã tồn tại!");
                     return View(model);
                 }
-                //nếu chưa tồn tại thì tạo bản ghi thông tin tài khoản trong bảng User
                 var user = new User
                 {
                     Username = model.Username,
-                    Password = model.Password, // Lưu ý: Nên mã hóa mật khẩu trước khi lưu
+                    Password = model.Password,
                     UserRole = "C"
                 };
                 db.Users.Add(user);
-                // và tạo bản ghi thông tin khách hàng trong bảng Customer
                 var customer = new Customer
                 {
                     CustomerName = model.CustomerName,
@@ -48,7 +46,6 @@ namespace BE_NguyenGiaBao_25DH230123.Controllers
                     Username = model.Username
                 };
                 db.Customers.Add(customer);
-                //lưu thông tin tài khoản và thông tin khách hàng vào CSDL
                 db.SaveChanges();
                 return RedirectToAction("Index", "Home");
             }
@@ -74,11 +71,9 @@ namespace BE_NguyenGiaBao_25DH230123.Controllers
                         && u.UserRole == "C");
                 if (user != null)
                 {
-                    // Lưu trạng thái đăng nhập vào session
                     Session["Username"] = user.Username;
                     Session["UserRole"] = user.UserRole;
 
-                    //lưu thông tin xác thực người dùng vào cookie
                     FormsAuthentication.SetAuthCookie(user.Username, false);
 
                     return RedirectToAction("Index", "Home");
@@ -92,7 +87,7 @@ namespace BE_NguyenGiaBao_25DH230123.Controllers
             return View(model);
         }
 
-        // GET: Account/Logout  (SLIDE KHÔNG CÓ CODE, mình tự viết theo mô tả)
+        // GET: Account/Logout
         public ActionResult Logout()
         {
             FormsAuthentication.SignOut();
@@ -101,7 +96,6 @@ namespace BE_NguyenGiaBao_25DH230123.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        // Lấy thông tin hồ sơ của người đang đăng nhập (null nếu không có hồ sơ khách hàng)
         private ProfileVM GetProfile()
         {
             string username = User.Identity.Name;

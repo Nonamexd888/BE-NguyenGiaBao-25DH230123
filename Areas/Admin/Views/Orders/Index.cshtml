@@ -17,7 +17,6 @@
     @(customerName == null ? "Danh sách đơn hàng" : "Đơn hàng của " + customerName)
 </h2>
 
-<!-- FORM TÌM KIẾM (Giống ảnh mẫu của cô) -->
 <div class="row mb-3">
     @using (Html.BeginForm("Index", "Orders", FormMethod.Get, new { @class = "form-inline" }))
     {
@@ -31,7 +30,6 @@
                 <option value="">-- Tất cả --</option>
                 <option value="Chưa thanh toán" @(searchStatus == "Chưa thanh toán" ? "selected" : "")>Chưa thanh toán</option>
                 <option value="Thanh toán tiền mặt" @(searchStatus == "Thanh toán tiền mặt" ? "selected" : "")>Thanh toán tiền mặt</option>
-                <!-- Bạn có thể thêm các trạng thái khác nếu DB có -->
             </select>
         </div>
         <div class="col-md-3">
@@ -62,7 +60,6 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <!-- Cô giáo để format mặc định nên tôi để lại format này để giống ảnh -->
                         <td>@item.OrderDate.ToString("M/d/yyyy h:mm:ss tt")</td>
                         <td>@item.Customer.CustomerName</td>
                         <td>@item.TotalAmount.ToString("N0")</td>
@@ -78,7 +75,6 @@
                             }
                         </td>
                         <td>
-                            <!-- Đổi text thành "Chi tiết đơn hàng" giống ảnh mẫu -->
                             @Html.ActionLink("Chi tiết đơn hàng", "Details", new { id = item.OrderID }, new { @class = "btn btn-info btn-sm" })
                         </td>
                     </tr>
@@ -93,7 +89,6 @@
 }
 else
 {
-    <!-- Hiển thị thông báo KHÔNG CÓ giống yêu cầu file PPT -->
     <div class="alert alert-warning text-center fw-bold" role="alert">
         KHÔNG CÓ
     </div>
